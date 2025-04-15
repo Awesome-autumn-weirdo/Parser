@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диаграмма состояний грамматики G[OPR]</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            max-width: 1000px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .image-container {
+            text-align: center;
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .caption {
+            font-style: italic;
+            text-align: center;
+            margin-top: 10px;
+            color: #555;
+        }
+        .note {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .keyword {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        .symbol {
+            color: #2980b9;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Диаграмма состояний грамматики G[OPR]</h1>
+    
+    <div class="image-container">
+        <img src="ТфякСхема.png" alt="Диаграмма состояний грамматики G[<OPR>]">
+        <div class="caption">Рис. 1. Диаграмма состояний для грамматики G[OPR]</div>
+    </div>
+    
+    <p>На рис. 1 приведена диаграмма состояний для грамматики G[OPR]. На диаграмме представлена посимвольная декомпозиция записей с генерацией соответствующего символического кода символов <span class="keyword"><идентификатор></span>, <span class="keyword"><ключевое слово></span> и литер <span class="symbol">«:»</span>, <span class="symbol">«=»</span> и др.</p>
+    
+    <div class="note">
+        <p>Непомеченные дуги на диаграмме соответствуют состоянию <span class="keyword">ERROR</span> (отсутствие данного символа в словаре грамматики) либо выходу из обработки очередного символа и переходу на <span class="keyword">start</span> для обработки следующего терминального символа.</p>
+    </div>
+    
+    <h2>Особенности диаграммы:</h2>
+    <ul>
+        <li>Состояния отображают процесс разбора записи Pascal</li>
+        <li>Переходы между состояниями маркированы терминальными символами</li>
+        <li>Специальные символы (<span class="symbol">:</span>, <span class="symbol">=</span>, <span class="symbol">,</span>) выделены отдельными переходами</li>
+        <li>Обработка ошибок реализована через состояние ERROR</li>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Грамматика записей в Pascal</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            margin: 20px;
+            max-width: 900px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .grammar {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .production {
+            margin-bottom: 8px;
+        }
+        .terminal {
+            color: #d63384;
+            font-weight: bold;
+        }
+        .non-terminal {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+        .symbol {
+            font-style: italic;
+        }
+        .rules {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Грамматика объявления и определения записи в Pascal G[‹OPR›]</h1>
+    
+    <div class="grammar">
+        <h2>Продукции P:</h2>
+        <div class="production">1) &lt;<span class="non-terminal">OPR</span>&gt; → '<span class="terminal">type</span>' &lt;<span class="non-terminal">SPACE</span>&gt;</div>
+        <div class="production">2) &lt;<span class="non-terminal">SPACE</span>&gt; → '<span class="terminal"> </span>' &lt;<span class="non-terminal">ID</span>&gt;</div>
+        <div class="production">3) &lt;<span class="non-terminal">ID</span>&gt; → <span class="symbol">letter</span> &lt;<span class="non-terminal">IDREM</span>&gt;</div>
+        <div class="production">4) &lt;<span class="non-terminal">IDREM</span>&gt; → <span class="symbol">letter</span> | <span class="symbol">digit</span> &lt;<span class="non-terminal">IDREM</span>&gt;</div>
+        <div class="production">5) &lt;<span class="non-terminal">IDREM</span>&gt; → '<span class="terminal">=</span>' &lt;<span class="non-terminal">REC</span>&gt;</div>
+        <div class="production">6) &lt;<span class="non-terminal">REC</span>&gt; → '<span class="terminal">record</span>' &lt;<span class="non-terminal">SPACE</span>&gt;</div>
+        <div class="production">7) &lt;<span class="non-terminal">SPACE</span>&gt; → '<span class="terminal"> </span>' &lt;<span class="non-terminal">FIELD</span>&gt;</div>
+        <div class="production">8) &lt;<span class="non-terminal">FIELD</span>&gt; → <span class="symbol">letter</span> &lt;<span class="non-terminal">FIELDREM</span>&gt;</div>
+        <div class="production">9) &lt;<span class="non-terminal">FIELDREM</span>&gt; → <span class="symbol">letter</span> | <span class="symbol">digit</span> &lt;<span class="non-terminal">FIELDREM</span>&gt;</div>
+        <div class="production">10) &lt;<span class="non-terminal">FIELDREM</span>&gt; → '<span class="terminal">,</span>' &lt;<span class="non-terminal">FIELDREM</span>&gt;</div>
+        <div class="production">11) &lt;<span class="non-terminal">FIELDREM</span>&gt; → '<span class="terminal">:</span>' &lt;<span class="non-terminal">TYPE</span>&gt;</div>
+        <div class="production">12) &lt;<span class="non-terminal">TYPE</span>&gt; → <span class="symbol">type</span> &lt;<span class="non-terminal">END</span>&gt;</div>
+        <div class="production">13) &lt;<span class="non-terminal">END</span>&gt; → '<span class="terminal">end</span>' &lt;<span class="non-terminal">SEMICOLON</span>&gt;</div>
+        <div class="production">14) &lt;<span class="non-terminal">SEMICOLON</span>&gt; → '<span class="terminal">;</span>'</div>
+    </div>
+    
+    <div class="rules">
+        <p>&lt;<span class="non-terminal">Digit</span>&gt; → 
+            <span class="terminal">"0"</span> | 
+            <span class="terminal">"1"</span> | 
+            <span class="terminal">"2"</span> | 
+            <span class="terminal">"3"</span> | 
+            <span class="terminal">"4"</span> | 
+            <span class="terminal">"5"</span> | 
+            <span class="terminal">"6"</span> | 
+            <span class="terminal">"7"</span> | 
+            <span class="terminal">"8"</span> | 
+            <span class="terminal">"9"</span>
+        </p>
+        
+        <p>&lt;<span class="non-terminal">Letter</span>&gt; → 
+            <span class="terminal">"a"</span> | 
+            <span class="terminal">"b"</span> | 
+            <span class="terminal">"c"</span> | 
+            ... | 
+            <span class="terminal">"z"</span> | 
+            <span class="terminal">"A"</span> | 
+            <span class="terminal">"B"</span> | 
+            <span class="terminal">"C"</span> | 
+            ... | 
+            <span class="terminal">"Z"</span>
+        </p>
+    </div>
+    
+    <div class="grammar">
+        <h2>Составляющие грамматики G[‹OPR›]:</h2>
+        <p><strong>Z</strong> = &lt;<span class="non-terminal">OPR</span>&gt;;</p>
+        
+        <p><strong>V<sub>T</sub></strong> = {
+            <span class="terminal">a</span>, 
+            <span class="terminal">b</span>, 
+            <span class="terminal">c</span>, 
+            ..., 
+            <span class="terminal">z</span>, 
+            <span class="terminal">A</span>, 
+            <span class="terminal">B</span>, 
+            <span class="terminal">C</span>, 
+            ..., 
+            <span class="terminal">Z</span>, 
+            <span class="terminal">=</span>, 
+            <span class="terminal">:</span>, 
+            <span class="terminal">,</span>, 
+            <span class="terminal">;</span>, 
+            <span class="terminal">0</span>, 
+            <span class="terminal">1</span>, 
+            <span class="terminal">2</span>, 
+            ..., 
+            <span class="terminal">9</span>
+        };</p>
+        
+        <p><strong>V<sub>N</sub></strong> = {
+            &lt;<span class="non-terminal">OPR</span>&gt;, 
+            &lt;<span class="non-terminal">ID</span>&gt;, 
+            &lt;<span class="non-terminal">IDREM</span>&gt;, 
+            &lt;<span class="non-terminal">SPACE</span>&gt;, 
+            &lt;<span class="non-terminal">FIELD</span>&gt;, 
+            &lt;<span class="non-terminal">FIELDREM</span>&gt;, 
+            &lt;<span class="non-terminal">REC</span>&gt;, 
+            &lt;<span class="non-terminal">TYPE</span>&gt;, 
+            &lt;<span class="non-terminal">END</span>&gt;, 
+            &lt;<span class="non-terminal">SEMICOLON</span>&gt;, 
+            "<span class="terminal">type</span>", 
+            "<span class="terminal">record</span>", 
+            "<span class="terminal">end</span>", 
+            "<span class="terminal">integer</span>", 
+            "<span class="terminal">real</span>", 
+            "<span class="terminal">char</span>", 
+            "<span class="terminal">boolean</span>", 
+            "<span class="terminal">string</span>", 
+            "<span class="terminal">var</span>"
+        }.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список использованных источников</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.5;
+            margin: 40px;
+            max-width: 800px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 16pt;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .source-list {
+            list-style-type: none;
+            padding: 0;
+            counter-reset: source-counter;
+        }
+        .source-item {
+            margin-bottom: 15px;
+            text-indent: -2.5em;
+            padding-left: 2.5em;
+            text-align: justify;
+        }
+        .source-item:before {
+            counter-increment: source-counter;
+            content: counter(source-counter) ".\00A0";
+            font-weight: normal;
+        }
+        .source-title {
+            font-style: italic;
+        }
+        .source-link {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .source-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ</h1>
+    
+    <ol class="source-list">
+        <li class="source-item">
+            Шорников Ю.В. <span class="source-title">Теория языков программирования: проектирование и реализация: учеб. пособие</span> / Ю.В. Шорников. – Новосибирск: Изд-во НГТУ, 2022.
+        </li>
+        <li class="source-item">
+            <span class="source-title">Теория формальных языков и компиляторов</span> [Электронный ресурс] / Электрон, дан. URL: <a href="https://dispace.edu.nstu.ru/didesk/course/show/8594" class="source-link">https://dispace.edu.nstu.ru/didesk/course/show/8594</a>, свободный. Яз.рус. (дата обращения 15.03.2025).
+        </li>
+    </ol>
+</body>
+</html>

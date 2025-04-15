@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner.cs - Lexical Analyzer</title>
+    <style>
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .code-container {
+            background-color: #ffffff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .keyword {
+            color: #0000ff;
+            font-weight: bold;
+        }
+        .comment {
+            color: #008000;
+            font-style: italic;
+        }
+        .string {
+            color: #a31515;
+        }
+        .type {
+            color: #2b91af;
+        }
+        .method {
+            color: #795e26;
+        }
+        .property {
+            color: #ff00ff;
+        }
+        .number {
+            color: #098658;
+        }
+    </style>
+</head>
+<body>
+    <div class="code-container">
+        <h1>Scanner.cs - Lexical Analyzer Implementation</h1>
+        <pre><code><span class="keyword">using</span> System.Windows.Forms;
+<span class="keyword">using</span> System;
+<span class="keyword">using</span> System.Drawing;
+
+<span class="keyword">namespace</span> <span class="type">Lexer</span>
+{
+    <span class="keyword">public</span> <span class="keyword">class</span> <span class="type">Scanner</span>
+    {
+        <span class="keyword">private</span> <span class="type">string</span>[] keywords = { <span class="string">"type"</span>, <span class="string">"record"</span>, <span class="string">"end"</span>, <span class="string">"integer"</span>, <span class="string">"real"</span>, <span class="string">"char"</span>, <span class="string">"boolean"</span>, <span class="string">"string"</span>, <span class="string">"var"</span> };
+        <span class="keyword">private</span> <span class="type">string</span>[] operators = { <span class="string">"="</span>, <span class="string">":"</span>, <span class="string">","</span>, <span class="string">";"</span> };
+        <span class="keyword">private</span> <span class="type">string</span>[] separators = { <span class="string">" "</span>, <span class="string">"\t"</span>, <span class="string">"\n"</span>, <span class="string">"\r"</span> };
+
+        <span class="keyword">public</span> <span class="type">bool</span> <span class="method">Analyze</span>(<span class="type">string</span> text, <span class="type">DataGridView</span> errorsDataGridView, <span class="type">RichTextBox</span> editorRichTextBox)
+        {
+            errorsDataGridView.Rows.Clear();
+
+            <span class="type">int</span> lineNumber = <span class="number">1</span>;
+            <span class="type">int</span> positionInLine = <span class="number">0</span>;
+            <span class="type">int</span> globalPosition = <span class="number">0</span>;
+            <span class="type">bool</span> lastWasKeyword = <span class="keyword">false</span>;
+            <span class="type">bool</span> isSuccess = <span class="keyword">true</span>;
+
+            <span class="keyword">while</span> (globalPosition < text.Length)
+            {
+                <span class="type">char</span> currentChar = text[globalPosition];
+
+                <span class="keyword">switch</span> (currentChar)
+                {
+                    <span class="keyword">case</span> <span class="string">'\n'</span>:
+                        lineNumber++;
+                        positionInLine = <span class="number">0</span>;
+                        globalPosition++;
+                        <span class="keyword">continue</span>;
+
+                    <span class="keyword">case</span> <span class="string">' '</span>:
+                    <span class="keyword">case</span> <span class="string">'\t'</span>:
+                        <span class="type">int</span> spaceStart = positionInLine;
+                        <span class="keyword">while</span> (globalPosition < text.Length && (text[globalPosition] == <span class="string">' '</span> || text[globalPosition] == <span class="string">'\t'</span>))
+                        {
+                            globalPosition++;
+                            positionInLine++;
+                        }
+
+                        <span class="keyword">if</span> (lastWasKeyword)
+                        {
+                            <span class="method">AddTokenToDataGridView</span>(errorsDataGridView, <span class="string">" "</span>, <span class="string">"(пробел)"</span>, lineNumber, spaceStart, positionInLine);
+                            lastWasKeyword = <span class="keyword">false</span>;
+                        }
+                        <span class="keyword">continue</span>;
+
+                    <span class="keyword">default</span>:
+
+                        <span class="keyword">if</span> (<span class="method">IsOperator</span>(currentChar))
+                        {
+                            <span class="type">string</span> token = currentChar.<span class="method">ToString</span>();
+                            <span class="type">int</span> endPosition = positionInLine + <span class="number">1</span>;
+                            <span class="method">AddTokenToDataGridView</span>(errorsDataGridView, token, <span class="string">"Оператор"</span>, lineNumber, positionInLine, endPosition);
+                            globalPosition++;
+                            positionInLine++;
+                            lastWasKeyword = <span class="keyword">false</span>;
+                            <span class="keyword">continue</span>;
+                        }
+
+                        <span class="keyword">if</span> (<span class="method">IsLatinLetter</span>(currentChar))
+                        {
+                            <span class="type">int</span> end = globalPosition;
+                            <span class="keyword">while</span> (end < text.Length &&
+                                   (<span class="method">IsLatinLetter</span>(text[end]) || <span class="type">char</span>.<span class="method">IsDigit</span>(text[end]) || text[end] == <span class="string">'_'</span>))
+                            {
+                                end++;
+                            }
+
+                            <span class="type">string</span> token = text.<span class="method">Substring</span>(globalPosition, end - globalPosition);
+                            <span class="type">string</span> tokenType = <span class="method">IsKeyword</span>(token) ? <span class="string">"Ключевое слово"</span> : <span class="string">"Идентификатор"</span>;
+                            <span class="type">int</span> endPosition = positionInLine + token.Length;
+
+                            <span class="method">AddTokenToDataGridView</span>(errorsDataGridView, token, tokenType, lineNumber, positionInLine, endPosition);
+
+                            globalPosition = end;
+                            positionInLine = endPosition;
+                            lastWasKeyword = tokenType == <span class="string">"Ключевое слово"</span>;
+                            <span class="keyword">continue</span>;
+                        }
+
+                        <span class="keyword">if</span> (<span class="type">char</span>.<span class="method">IsDigit</span>(currentChar))
+                        {
+                            <span class="type">int</span> end = globalPosition;
+                            <span class="type">bool</span> isReal = <span class="keyword">false</span>;
+
+                            <span class="keyword">while</span> (end < text.Length && (<span class="type">char</span>.<span class="method">IsDigit</span>(text[end]) || text[end] == <span class="string">'.'</span> || text[end] == <span class="string">','</span>))
+                            {
+                                <span class="keyword">if</span> (text[end] == <span class="string">'.'</span> || text[end] == <span class="string">','</span>)
+                                {
+                                    <span class="keyword">if</span> (isReal || end + <span class="number">1</span> >= text.Length || !<span class="type">char</span>.<span class="method">IsDigit</span>(text[end + <span class="number">1</span>]))
+                                        <span class="keyword">break</span>;
+                                    isReal = <span class="keyword">true</span>;
+                                }
+                                end++;
+                            }
+
+                            <span class="type">string</span> token = text.<span class="method">Substring</span>(globalPosition, end - globalPosition);
+                            <span class="type">int</span> endPosition = positionInLine + token.Length;
+                            <span class="type">string</span> tokenType = isReal ? <span class="string">"Вещественное число"</span> : <span class="string">"Целое без знака"</span>;
+
+                            <span class="method">AddTokenToDataGridView</span>(errorsDataGridView, token, tokenType, lineNumber, positionInLine, endPosition);
+
+                            globalPosition = end;
+                            positionInLine = endPosition;
+                            lastWasKeyword = <span class="keyword">false</span>;
+                            <span class="keyword">continue</span>;
+                        }
+
+                        <span class="comment">// Обработка цепочки недопустимых символов (в т.ч. русских)</span>
+                        <span class="type">int</span> errorStartGlobal = globalPosition;
+                        <span class="type">int</span> errorStartLine = positionInLine;
+
+                        <span class="keyword">while</span> (globalPosition < text.Length &&
+                               !<span class="method">IsLatinLetter</span>(text[globalPosition]) &&
+                               !<span class="type">char</span>.<span class="method">IsDigit</span>(text[globalPosition]) &&
+                               !<span class="method">IsOperator</span>(text[globalPosition]) &&
+                               !<span class="type">char</span>.<span class="method">IsWhiteSpace</span>(text[globalPosition]))
+                        {
+                            globalPosition++;
+                            positionInLine++;
+                        }
+
+                        <span class="method">AddTokenToDataGridView</span>(errorsDataGridView, text[errorStartGlobal].<span class="method">ToString</span>(), <span class="string">"Недопустимый символ"</span>, lineNumber, errorStartLine, errorStartLine + <span class="number">1</span>);
+                        <span class="method">HighlightError</span>(editorRichTextBox, errorStartGlobal, <span class="number">1</span>);
+                        isSuccess = <span class="keyword">false</span>;
+                        <span class="keyword">continue</span>;
+                }
+            }
+
+            <span class="keyword">return</span> isSuccess;
+        }
+
+        <span class="keyword">private</span> <span class="type">bool</span> <span class="method">IsLatinLetter</span>(<span class="type">char</span> ch)
+        {
+            <span class="keyword">return</span> (ch >= <span class="string">'A'</span> && ch <= <span class="string">'Z'</span>) || (ch >= <span class="string">'a'</span> && ch <= <span class="string">'z'</span>);
+        }
+
+        <span class="keyword">private</span> <span class="type">bool</span> <span class="method">IsOperator</span>(<span class="type">char</span> ch) => <span class="type">Array</span>.<span class="method">Exists</span>(operators, op => op[<span class="number">0</span>] == ch);
+
+        <span class="keyword">private</span> <span class="type">bool</span> <span class="method">IsKeyword</span>(<span class="type">string</span> token) => <span class="type">Array</span>.<span class="method">Exists</span>(keywords, kw => kw == token);
+
+        <span class="keyword">private</span> <span class="type">void</span> <span class="method">AddTokenToDataGridView</span>(<span class="type">DataGridView</span> dataGridView, <span class="type">string</span> token, <span class="type">string</span> tokenType, <span class="type">int</span> lineNumber, <span class="type">int</span> startPos, <span class="type">int</span> endPos)
+        {
+            <span class="type">string</span> positionRange = <span class="string">$"с {startPos} по {endPos - 1} символ"</span>;
+            dataGridView.<span class="property">Rows</span>.<span class="method">Add</span>(<span class="method">GetTokenCode</span>(token, tokenType), tokenType, token, lineNumber, positionRange);
+        }
+
+        <span class="keyword">private</span> <span class="type">int</span> <span class="method">GetTokenCode</span>(<span class="type">string</span> token, <span class="type">string</span> tokenType)
+        {
+            <span class="keyword">switch</span> (tokenType)
+            {
+                <span class="keyword">case</span> <span class="string">"Ключевое слово"</span>: <span class="keyword">return</span> <span class="type">Array</span>.<span class="method">IndexOf</span>(keywords, token) + <span class="number">1</span>;
+                <span class="keyword">case</span> <span class="string">"Идентификатор"</span>: <span class="keyword">return</span> <span class="number">10</span>;
+                <span class="keyword">case</span> <span class="string">"(пробел)"</span>: <span class="keyword">return</span> <span class="number">11</span>;
+                <span class="keyword">case</span> <span class="string">"Оператор"</span>: <span class="keyword">return</span> <span class="type">Array</span>.<span class="method">IndexOf</span>(operators, token) + <span class="number">12</span>;
+                <span class="keyword">case</span> <span class="string">"Целое без знака"</span>: <span class="keyword">return</span> <span class="number">16</span>;
+                <span class="keyword">case</span> <span class="string">"Вещественное число"</span>: <span class="keyword">return</span> <span class="number">17</span>;
+                <span class="keyword">case</span> <span class="string">"Недопустимый символ"</span>: <span class="keyword">return</span> -<span class="number">1</span>;
+                <span class="keyword">default</span>: <span class="keyword">return</span> <span class="number">0</span>;
+            }
+        }
+
+        <span class="keyword">private</span> <span class="type">void</span> <span class="method">HighlightError</span>(<span class="type">RichTextBox</span> richTextBox, <span class="type">int</span> start, <span class="type">int</span> length)
+        {
+            <span class="type">int</span> originalSelectionStart = richTextBox.<span class="property">SelectionStart</span>;
+            <span class="type">int</span> originalSelectionLength = richTextBox.<span class="property">SelectionLength</span>;
+
+            richTextBox.<span class="method">Select</span>(start, length);
+            richTextBox.<span class="property">SelectionBackColor</span> = <span class="type">Color</span>.<span class="property">Plum</span>;
+
+            <span class="comment">// Возвращаем выделение обратно, чтобы не сбивать курсор</span>
+            richTextBox.<span class="method">Select</span>(originalSelectionStart, originalSelectionLength);
+        }
+    }
+}</code></pre>
+    </div>
+</body>
+</html>

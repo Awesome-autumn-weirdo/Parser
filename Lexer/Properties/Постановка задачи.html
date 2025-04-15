@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Записи в Pascal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            max-width: 800px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+        }
+        .example {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .example-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Записи в Pascal</h1>
+    
+    <p>Запись – это структура данных, состоящая из фиксированного числа компонент, называемых полями. Каждое поле может иметь свой тип данных.</p>
+    
+    <p>Общий вид описания типа record в языке программирования Pascal:</p>
+    
+    <pre><code>type t = record
+    id11, id12, …: type1;
+    id21, id22, …: type2;
+    ...
+end;</code></pre>
+    
+    <p>Здесь <code>id</code> - идентификаторы полей; <code>type</code> – типы полей; <code>t</code> – имя типа.</p>
+    
+    <h2>Примеры:</h2>
+    
+    <div class="example">
+        <div class="example-title">Пример 1. Данные комплексного типа</div>
+        <pre><code>type complex = record
+    re, im: real
+end;
+var c: complex;</code></pre>
+        <p>Здесь <code>complex</code> – имя типа, а <code>c</code> – имя переменной. Переменная <code>c</code> состоит из двух полей: <code>re</code> и <code>im</code>, имеющих один и тот же тип (<code>real</code>). Эти поля переменной <code>c</code> обозначаются как <code>c.re</code> и <code>c.im</code>.</p>
+    </div>
+    
+    <div class="example">
+        <div class="example-title">Пример 2. Даты событий</div>
+        <pre><code>type date = record
+    month: 1..12;
+    day: 1..31;
+    year: integer
+end;
+var d: date;</code></pre>
+        <p>В этом примере описан тип <code>date</code> и переменная <code>d</code>, принадлежащая этому типу. Переменная <code>d</code> описана как запись, состоящая из трех полей: <code>month</code>, <code>day</code> и <code>year</code>. Каждое поле содержит соответственно данные: целое число в пределах от 1 до 12 (номер месяца), целое число от 1 до 31 (день), целое число (год).</p>
+    </div>
+    
+    <h2>Верные записи согласно автоматной грамматике G[‹OPR›]:</h2>
+    
+    <ol>
+        <li><code>type Person = record name:char, age:integer end;</code></li>
+        <li><code>type Product = record id:integer, price:real, inStock:boolean end;</code></li>
+        <li><code>var p: Product;</code></li>
+    </ol>
+</body>
+</html>

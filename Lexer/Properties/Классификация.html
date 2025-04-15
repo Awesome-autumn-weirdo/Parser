@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализ автоматной грамматики</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            max-width: 900px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .grammar-analysis {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .rule {
+            display: flex;
+            margin-bottom: 8px;
+            padding: 5px;
+            background-color: white;
+            border-radius: 3px;
+        }
+        .rule-number {
+            font-weight: bold;
+            min-width: 30px;
+            color: #7f8c8d;
+        }
+        .rule-content {
+            flex-grow: 1;
+        }
+        .rule-type {
+            min-width: 150px;
+            text-align: right;
+            color: #27ae60;
+            font-style: italic;
+        }
+        .conclusion {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .terminal {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        .non-terminal {
+            color: #2980b9;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Анализ автоматной грамматики (тип 4 по Хомскому)</h1>
+    
+    <p>Грамматика относится к автоматным грамматикам (тип 4 по Хомскому). Разберём каждое правило и проверим его соответствие автоматной грамматике:</p>
+    
+    <div class="grammar-analysis">
+        <div class="rule">
+            <div class="rule-number">1)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">OPR</span>&gt; → '<span class="terminal">type</span>' &lt;<span class="non-terminal">SPACE</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">2)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">SPACE</span>&gt; → '<span class="terminal"> </span>' &lt;<span class="non-terminal">ID</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">3)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">ID</span>&gt; → <span class="terminal">letter</span> &lt;<span class="non-terminal">IDREM</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">4)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">IDREM</span>&gt; → <span class="terminal">letter</span> | <span class="terminal">digit</span> &lt;<span class="non-terminal">IDREM</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">5)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">IDREM</span>&gt; → '<span class="terminal">=</span>' &lt;<span class="non-terminal">REC</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">6)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">REC</span>&gt; → '<span class="terminal">record</span>' &lt;<span class="non-terminal">SPACE</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">7)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">SPACE</span>&gt; → '<span class="terminal"> </span>' &lt;<span class="non-terminal">FIELD</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">8)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">FIELD</span>&gt; → <span class="terminal">letter</span> &lt;<span class="non-terminal">FIELDREM</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">9)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">FIELDREM</span>&gt; → <span class="terminal">letter</span> | <span class="terminal">digit</span> &lt;<span class="non-terminal">FIELDREM</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">10)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">FIELDREM</span>&gt; → '<span class="terminal">,</span>' &lt;<span class="non-terminal">FIELDREM</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">11)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">FIELDREM</span>&gt; → '<span class="terminal">:</span>' &lt;<span class="non-terminal">TYPE</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">12)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">TYPE</span>&gt; → <span class="terminal">type</span> &lt;<span class="non-terminal">END</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">13)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">END</span>&gt; → '<span class="terminal">end</span>' &lt;<span class="non-terminal">SEMICOLON</span>&gt;</div>
+            <div class="rule-type">A→aB (праворекурсивные продукции)</div>
+        </div>
+        <div class="rule">
+            <div class="rule-number">14)</div>
+            <div class="rule-content">&lt;<span class="non-terminal">SEMICOLON</span>&gt; → '<span class="terminal">;</span>'</div>
+            <div class="rule-type">A → a (терминальные продукции)</div>
+        </div>
+    </div>
+    
+    <div class="conclusion">
+        <h3>Вывод:</h3>
+        <p>Грамматика является автоматной (тип 4): Все правила либо праворекурсивные (A → aB), либо терминальные (A → a).</p>
+    </div>
+</body>
+</html>
