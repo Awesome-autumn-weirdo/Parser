@@ -880,6 +880,7 @@ namespace Lexer
             var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
             if (editorRichTextBox == null) return;
 
+            SetStatus("Выполнение синтаксического анализа...");
             try
             {
                 string inputText = editorRichTextBox.Text;
@@ -913,6 +914,7 @@ namespace Lexer
                         MessageBox.Show($"Найдено {errors.Count} ошибок.", "Результат анализа",
                                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
+                    SetStatus("Синтаксический анализ завершен");
                 });
             }
             catch (Exception ex)
