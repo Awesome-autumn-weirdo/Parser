@@ -177,6 +177,7 @@
     <Content Include="icons\icons8-скопировать-60.png" />
     <Content Include="icons\icons8-стрелка назад.png" />
     <Content Include="icons\icons8-стрелка-50.png" />
+    <None Include="Resources\ТфякСхема.png" />
     <None Include="Properties\test2.png" />
     <None Include="Properties\test1.png" />
     <None Include="Properties\test3.png" />

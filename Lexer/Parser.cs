@@ -10,9 +10,9 @@ namespace Lexer
     {
         private static readonly HashSet<string> Keywords = new HashSet<string> { "type", "record", "end", "real", "integer", "string", "boolean", "char" };
 
-        private enum TokenType { Keyword, Identifier, Symbol }
+        public enum TokenType { Keyword, Identifier, Symbol }
 
-        private class Token
+        public class Token
         {
             public TokenType Type;
             public string Value;
@@ -196,7 +196,7 @@ namespace Lexer
 
             return errors;
         }
-        private List<Token> Tokenize(string input, RichTextBox richTextBox)
+        public List<Token> Tokenize(string input, RichTextBox richTextBox)
         {
             var tokens = new List<Token>();
             var lexErrors = new List<(int start, int length)>(); // Список недопустимых символов
