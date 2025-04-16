@@ -237,61 +237,38 @@ namespace Lexer
         {
             if (dataGridView1 != null)
             {
-                // Сохраняем текущие настройки шрифта
                 Font currentFont = new Font("Bookman Old Style", currentOutputFontSize);
                 DataGridViewCellStyle cellStyle = new DataGridViewCellStyle { Font = currentFont };
 
-                // Очищаем старые столбцы перед добавлением новых
                 dataGridView1.Columns.Clear();
 
-                // Код лексемы
+                // Тип ошибки
                 dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    Name = "TokenCode",
-                    HeaderText = "Код лексемы",
-                    Width = 90,
-                    DefaultCellStyle = cellStyle
-                });
-
-                // Тип лексемы
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "TokenType",
-                    HeaderText = "Тип лексемы",
+                    Name = "ErrorType",
+                    HeaderText = "Тип ошибки",
                     AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    Width = 225,
                     DefaultCellStyle = cellStyle
                 });
 
-                //// Сама лексема
-                //dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                //{
-                //    Name = "TokenValue",
-                //    HeaderText = "Лексема",
-                //    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                //    Width = 70,
-                //    DefaultCellStyle = cellStyle
-                //});
+                // Номер строки
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "LineNumber",
+                    HeaderText = "Номер строки",
+                    Width = 100,
+                    DefaultCellStyle = cellStyle
+                });
 
-                //// Номер строки
-                //dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                //{
-                //    Name = "LineNumber",
-                //    HeaderText = "Номер строки",
-                //    Width = 70,
-                //    DefaultCellStyle = cellStyle
-                //});
+                // Позиция
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "PositionRange",
+                    HeaderText = "Позиция (с-до)",
+                    Width = 130,
+                    DefaultCellStyle = cellStyle
+                });
 
-                //// Позиция в строке
-                //dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                //{
-                //    Name = "Position",
-                //    HeaderText = "Позиция",
-                //    Width = 150,
-                //    DefaultCellStyle = cellStyle
-                //});
-
-                // Устанавливаем шрифт для заголовков
                 dataGridView1.ColumnHeadersDefaultCellStyle.Font = currentFont;
                 dataGridView1.Font = currentFont;
             }
@@ -893,27 +870,27 @@ namespace Lexer
 
                     if (errors.Count == 0)
                     {
-                        dataGridView1.Rows.Add("0", "Успех", "Синтаксис правильный", "1", "1");
                         MessageBox.Show("Анализ завершен успешно. Ошибок не найдено.", "Результат анализа",
                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        foreach (var error in errors)
+                        foreach (var (message, position, length) in errors)
                         {
-                            // Добавляем ошибку без информации о позиции
+                            (int line, int col) = GetLineAndColumn(inputText, position);
+                            int endCol = col + length;
+
                             dataGridView1.Rows.Add(
-                                "Ошибка",
-                                error,
-                                "", // Доп. информация
-                                "", // Строка (будет заполнено отдельно)
-                                ""  // Позиция в строке (будет заполнено отдельно)
+                                message,
+                                (line + 1).ToString(),           // Строка
+                                $"{col + 1}-{endCol}"           // Позиция
                             );
                         }
 
                         MessageBox.Show($"Найдено {errors.Count} ошибок.", "Результат анализа",
                                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
+
                     SetStatus("Синтаксический анализ завершен");
                 });
             }
@@ -923,6 +900,27 @@ namespace Lexer
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
+        private (int line, int column) GetLineAndColumn(string text, int position)
+        {
+            int line = 0, column = 0, index = 0;
+            var lines = text.Split('\n');
+
+            foreach (var ln in lines)
+            {
+                if (position <= index + ln.Length)
+                {
+                    column = position - index;
+                    break;
+                }
+                index += ln.Length + 1; // +1 за '\n'
+                line++;
+            }
+
+            return (line, column);
+        }
+
 
         private void toolStripButton9_Click(object sender, EventArgs e)
         {
