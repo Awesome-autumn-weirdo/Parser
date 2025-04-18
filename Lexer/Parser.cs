@@ -93,99 +93,127 @@ namespace Lexer
                 }
                 i++;
 
+                var validTypes = new HashSet<string> { "integer", "real", "char", "boolean", "string" };
+
                 while (i < tokens.Count && tokens[i].Value != "end")
                 {
                     var fieldNames = new List<string>();
+                    bool awaitingComma = false;
+                    bool colonExpected = false;
 
-                    // Первый идентификатор (или виртуальный)
-                    if (tokens[i].Type == TokenType.Identifier)
+                    // Сбор имён полей
+                    while (i < tokens.Count)
                     {
-                        fieldNames.Add(tokens[i].Value);
+                        if (tokens[i].Value == ":")
+                        {
+                            colonExpected = true;
+                            break;
+                        }
+
+                        // Если встретили тип или конец записи - выходим
+                        if ((tokens[i].Type == TokenType.Keyword && validTypes.Contains(tokens[i].Value.ToLower())) ||
+                            tokens[i].Value == "end" || tokens[i].Value == ";")
+                        {
+                            break;
+                        }
+
+                        if (tokens[i].Type == TokenType.Identifier && !Keywords.Contains(tokens[i].Value))
+                        {
+                            if (awaitingComma)
+                            {
+                                errors.Add(($"Пропущена запятая между именами полей перед '{tokens[i].Value}'",
+                                            tokens[i].Position, tokens[i].Value.Length));
+                            }
+
+                            fieldNames.Add(tokens[i].Value);
+                            i++;
+                            awaitingComma = true;
+                        }
+                        else if (tokens[i].Value == ",")
+                        {
+                            if (!awaitingComma)
+                            {
+                                errors.Add(("Запятая без идентификатора перед ней", tokens[i].Position, 1));
+                            }
+                            i++;
+                            awaitingComma = false;
+                        }
+                        else
+                        {
+                            // Неизвестный токен - предполагаем, что это начало типа
+                            break;
+                        }
+                    }
+
+                    // Обработка двоеточия
+                    if (!colonExpected)
+                    {
+                        if (i < tokens.Count && tokens[i].Value != ":" && fieldNames.Count > 0)
+                        {
+                            errors.Add(("Ожидалось ':' после списка полей", tokens[i].Position, 1));
+                            tokens.Insert(i, new Token(TokenType.Symbol, ":", tokens[i].Position));
+                        }
+                    }
+
+                    if (i < tokens.Count && tokens[i].Value == ":")
+                    {
+                        i++; // пропустить двоеточие
+                    }
+
+                    // Проверка типа
+                    if (i >= tokens.Count || tokens[i].Value == "end" || tokens[i].Value == ";")
+                    {
+                        int pos = i < tokens.Count ? tokens[i].Position : input.Length;
+                        errors.Add(("Ожидался тип поля", pos, 1));
+                        tokens.Insert(i, new Token(TokenType.Keyword, "integer", pos));
                         i++;
                     }
                     else
                     {
-                        errors.Add(("Ожидался идентификатор в списке полей, найдено '" + tokens[i].Value + "'", tokens[i].Position, tokens[i].Value.Length));
-                        // Вставляем виртуальный идентификатор
-                        string virtualId = $"_virt_{i}";
-                        tokens.Insert(i, new Token(TokenType.Identifier, virtualId, tokens[i].Position));
-                        fieldNames.Add(virtualId);
+                        string typeName = tokens[i].Value;
+                        if (!validTypes.Contains(typeName.ToLower()))
+                        {
+                            errors.Add(($"Недопустимый тип поля: '{typeName}'", tokens[i].Position, typeName.Length));
+                        }
                         i++;
                     }
-
-                    // Дополнительные идентификаторы через запятую
-                    while (i < tokens.Count && tokens[i].Value == ",")
-                    {
-                        i++; // пропускаем запятую
-
-                        if (i < tokens.Count && tokens[i].Type == TokenType.Identifier)
-                        {
-                            fieldNames.Add(tokens[i].Value);
-                            i++;
-                        }
-                        else
-                        {
-                            errors.Add(("Ожидался идентификатор после ',', найдено '" + (i < tokens.Count ? tokens[i].Value : "EOF") + "'", tokens[i].Position, 1));
-                            string virtualId = $"_virt_{i}";
-                            tokens.Insert(i, new Token(TokenType.Identifier, virtualId, tokens[i - 1].Position + 1));
-                            fieldNames.Add(virtualId);
-                            i++;
-                        }
-                    }
-
-                    // Проверка на ':'
-                    if (i >= tokens.Count || tokens[i].Value != ":")
-                    {
-                        int pos = i < tokens.Count ? tokens[i].Position : input.Length;
-                        errors.Add(("Ожидалось ':' после списка полей", pos, 1));
-                        tokens.Insert(i, new Token(TokenType.Symbol, ":", pos));
-                    }
-                    i++;
-
-                    // Тип поля
-                    if (i >= tokens.Count || !(tokens[i].Type == TokenType.Keyword && Keywords.Contains(tokens[i].Value)))
-                    {
-                        int pos = i < tokens.Count ? tokens[i].Position : input.Length;
-                        errors.Add(("Ожидался тип поля, найдено '" + (i < tokens.Count ? tokens[i].Value : "EOF") + "'", pos, 1));
-                        tokens.Insert(i, new Token(TokenType.Keyword, "real", pos));
-                    }
-                    i++;
 
                     // Завершение поля
                     if (i < tokens.Count && tokens[i].Value == ";")
                     {
                         i++;
                     }
-                    else if (i < tokens.Count && tokens[i].Value != "end")
+                    else if (i < tokens.Count && tokens[i].Value == "end")
                     {
-                        errors.Add(("Ожидалась ';' после поля", tokens[i].Position, 1));
-                        tokens.Insert(i, new Token(TokenType.Symbol, ";", tokens[i].Position));
-                        i++;
+                        // Если встретили 'end' без точки с запятой - это нормально
+                        continue;
+                    }
+                    else if (fieldNames.Count > 0)
+                    {
+                        // Если нет ни ';' ни 'end' - ожидаем 'end'
+                        break;
                     }
                 }
 
-                // Закрытие записи
+                // Проверка закрытия записи
                 if (i >= tokens.Count || tokens[i].Value != "end")
                 {
                     int pos = i < tokens.Count ? tokens[i].Position : input.Length;
-                    errors.Add(("Ожидалось 'end' в конце объявления", pos, 1));
-                    tokens.Insert(i, new Token(TokenType.Keyword, "end", pos));
+                    errors.Add(("Ожидалось 'end' в конце объявления", pos, 3));
+                    // Не вставляем искусственный 'end', чтобы не создавать каскадных ошибок
+                    return errors;
                 }
                 i++;
 
+                // Проверка на ; после end
                 if (i < tokens.Count && tokens[i].Value == ";")
                 {
                     i++;
                 }
-                else
+                else if (i < tokens.Count)
                 {
-                    int pos = i < tokens.Count ? tokens[i].Position : input.Length;
-                    errors.Add(("Ожидалась ';' после 'end'", pos, 1));
-                    tokens.Insert(i, new Token(TokenType.Symbol, ";", pos));
-                    i++;
+                    errors.Add(("Ожидалась ';' после 'end'", tokens[i].Position, 1));
                 }
-
-
             }
             catch (Exception ex)
             {
