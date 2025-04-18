@@ -41,8 +41,8 @@ end;
 
 Следуя введенному формальному определению грамматики, представим `G[<OPR>]` ее составляющими:  
 - **Z** = `<OPR>`  
-- **VT** = `{a, b, c, ..., z, A, B, C, ..., Z, "=", ":", ",", ";", 0, 1, 2, ..., 9}`  
-- **VN** = `{<OPR>, <ID>, <IDREM>, <SPACE>, <FIELD>, <FIELDREM>, <REC>, <TYPE>, <END>, <SEMICOLON>, "type", "record", "end", "integer", "real", "char", "boolean", "string", "var" }`  
+- **VT** = `{a, b, c, ..., z, A, B, C, ..., Z, "=", ":", ",", ";", 0, 1, 2, ..., 9, "type", "record", "end", "integer", "real", "char", "boolean", "string", "var" }`  
+- **VN** = `{<OPR>, <ID>, <IDREM>, <SPACE>, <FIELD>, <FIELDREM>, <REC>, <TYPE>, <END>, <SEMICOLON>}`  
  
 
 ### 4. Классификация грамматики  
@@ -50,9 +50,11 @@ end;
 либо терминальные (A → a).
 
 ### 5. Граф конечного автомата
-![image_2025-03-30_11-24-45](https://github.com/user-attachments/assets/5176714c-5984-4a51-b29f-78126c009c25)
+![ГрафАвтомата(1) drawio](https://github.com/user-attachments/assets/a495841d-8783-4557-b374-08c4085b44bf)
+
 
 ### 6. Тестовые примеры
-![изображение](https://github.com/user-attachments/assets/65ba0823-8363-4da0-ab37-60722465199a)
-![изображение](https://github.com/user-attachments/assets/09326aaf-c89c-42c2-b6d6-6dc2d7bb62a6)
+![изображение](https://github.com/user-attachments/assets/399d5492-3f11-44c2-9d99-6fec0eaaf635)
+![изображение](https://github.com/user-attachments/assets/8c045c99-5fcd-4bb8-9c78-9e3953ded0ec)
+
 
