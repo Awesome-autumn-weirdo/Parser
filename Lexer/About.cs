@@ -17,7 +17,7 @@ namespace Lexer
             InitializeComponent();
 
             Text = "О программе";
-            label1.Text = "Версия 0.0.1";
+            label1.Text = "Версия 0.0.3";
             label2.Text = "Автор: Качигина Валерия Алексеевна";
             label3.Text = "Языковой процессор";
         }

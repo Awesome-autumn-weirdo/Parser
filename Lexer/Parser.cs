@@ -239,15 +239,48 @@ namespace Lexer
             var tokens = new List<Token>();
             var lexErrors = new List<(string message, int position, int length)>();
 
-            var cleanedInput = Regex.Replace(input, @"[^a-zA-Z0-9_:\s,;=\n]", m =>
-            {
-                lexErrors.Add(($"Недопустимый символ '{m.Value}'", m.Index, 1));
-                HighlightError(richTextBox, m.Index, 1);
-                return "";
-            });
+            var sb = new System.Text.StringBuilder();
+            var cleanedInput = new System.Text.StringBuilder();
+            int i = 0;
 
+            while (i < input.Length)
+            {
+                char c = input[i];
+
+                if (char.IsLetterOrDigit(c) || c == '_' || c == ':' || c == ',' || c == ';' || c == '=' || char.IsWhiteSpace(c))
+                {
+                    // если в буфере были недопустимые символы — запишем их как ошибку
+                    if (sb.Length > 0)
+                    {
+                        int errPos = i - sb.Length;
+                        string invalidSeq = sb.ToString();
+                        lexErrors.Add(($"Недопустимый символ: '{invalidSeq}'", errPos, invalidSeq.Length));
+                        HighlightError(richTextBox, errPos, invalidSeq.Length);
+                        sb.Clear();
+                    }
+
+                    cleanedInput.Append(c);
+                }
+                else
+                {
+                    sb.Append(c); // накапливаем недопустимый символ
+                }
+
+                i++;
+            }
+
+            // если что-то осталось в буфере после цикла
+            if (sb.Length > 0)
+            {
+                int errPos = input.Length - sb.Length;
+                string invalidSeq = sb.ToString();
+                lexErrors.Add(($"Недопустимый символ: '{invalidSeq}'", errPos, invalidSeq.Length));
+                HighlightError(richTextBox, errPos, invalidSeq.Length);
+            }
+
+            // Теперь токенизация
             var pattern = @"\w+|[:,;=]";
-            var matches = Regex.Matches(cleanedInput, pattern);
+            var matches = Regex.Matches(cleanedInput.ToString(), pattern);
 
             foreach (Match match in matches)
             {
@@ -269,6 +302,7 @@ namespace Lexer
 
             return (tokens, lexErrors);
         }
+
 
         private void HighlightError(RichTextBox richTextBox, int start, int length)
         {
