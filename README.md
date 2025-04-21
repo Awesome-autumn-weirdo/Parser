@@ -41,7 +41,7 @@ end;
 
 Следуя введенному формальному определению грамматики, представим `G[<OPR>]` ее составляющими:  
 - **Z** = `<OPR>`  
-- **VT** = `{a, b, c, ..., z, A, B, C, ..., Z, "=", ":", ",", ";", 0, 1, 2, ..., 9, "type", "record", "end", "integer", "real", "char", "boolean", "string", "var" }`  
+- **VT** = `{a, b, c, ..., z, A, B, C, ..., Z, "=", ":", ",", ";", 0, 1, 2, ..., 9, "type", "record", "end", "integer", "real", "char", "boolean", "string" }`  
 - **VN** = `{<OPR>, <ID>, <IDREM>, <SPACE>, <FIELD>, <FIELDREM>, <REC>, <TYPE>, <END>, <SEMICOLON>}`  
  
 
