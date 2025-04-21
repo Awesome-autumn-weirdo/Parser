@@ -200,10 +200,15 @@ namespace Lexer
                 {
                     int pos = i < tokens.Count ? tokens[i].Position : input.Length;
                     errors.Add(("Ожидалось 'end' в конце объявления", pos, 3));
-                    // Не вставляем искусственный 'end', чтобы не создавать каскадных ошибок
-                    return errors;
+
+                    // Восстанавливаем: добавляем "end" токен
+                    tokens.Insert(i, new Token(TokenType.Keyword, "end", pos));
                 }
-                i++;
+                else
+                {
+                    i++; // если "end" был — просто идём дальше
+                }
+
 
                 // Проверка на ; после end
                 if (i < tokens.Count && tokens[i].Value == ";")
@@ -214,6 +219,12 @@ namespace Lexer
                 {
                     errors.Add(("Ожидалась ';' после 'end'", tokens[i].Position, 1));
                 }
+                else
+                {
+                    // Конец ввода — но точка с запятой всё равно обязательна
+                    errors.Add(("Ожидалась ';' после 'end'", input.Length, 1));
+                }
+
             }
             catch (Exception ex)
             {
