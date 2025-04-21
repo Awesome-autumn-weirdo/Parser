@@ -91,6 +91,11 @@
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Scanner.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SL.cs">
@@ -134,14 +139,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="SL.resx">
       <DependentUpon>SL.cs</DependentUpon>
     </EmbeddedResource>
@@ -177,10 +177,25 @@
     <Content Include="icons\icons8-скопировать-60.png" />
     <Content Include="icons\icons8-стрелка назад.png" />
     <Content Include="icons\icons8-стрелка-50.png" />
+    <None Include="Resources\Исходный_код.txt" />
+    <None Include="Resources\test3.png" />
+    <None Include="Resources\test2.png" />
+    <None Include="Resources\test1.png" />
+    <None Include="Resources\Постановка задачи.html" />
+    <None Include="Resources\Список литературы.html" />
+    <None Include="Resources\Грамматика.html" />
+    <None Include="Resources\Методы анализа.html" />
+    <None Include="Resources\Классификация.html" />
+    <None Include="Resources\Исходный код.html" />
+    <None Include="Resources\Тестовый пример.html" />
+    <None Include="Resources\Справка.html" />
+    <None Include="Properties\Грамматика.html" />
+    <None Include="Resources\ГрафАвтомата%282%29.drawio.png" />
     <None Include="Properties\test2.png" />
     <None Include="Properties\test1.png" />
     <None Include="Properties\test3.png" />
     <None Include="Properties\ТфякСхема.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

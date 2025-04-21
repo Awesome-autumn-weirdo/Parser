@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тип record в Pascal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+        }
+
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .definition {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 3px solid #7f8c8d;
+        }
+
+        .keyword {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        .type {
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+        .example {
+            background-color: #e8f8f5;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .valid-examples {
+            background-color: #f5e8f8;
+            border-left: 4px solid #9b59b6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .valid-title {
+            font-weight: bold;
+            color: #9b59b6;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тип record в Pascal</h1>
+
+    <div class="definition">
+        <p>Запись – это структура данных, состоящая из фиксированного числа компонент, называемых полями. Каждое поле может иметь свой тип данных.</p>
+
+        <p>Общий вид описания типа record в языке программирования Pascal:</p>
+
+        <div class="code-block">
+            <span class="keyword">type</span> t = <span class="keyword">record</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;id11, id12, …: type1;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;id21, id22, …: type2;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;...<br>
+            <span class="keyword">end</span>;
+        </div>
+
+        <p>Здесь <em>id</em> – идентификаторы полей; <em>type</em> – типы полей; <em>t</em> – имя типа.</p>
+    </div>
+
+    <h2>Примеры</h2>
+
+    <div class="example">
+        <div class="example-title">Пример 1. Данные комплексного типа</div>
+        <p>Можно описать переменной типа record.</p>
+
+        <div class="code-block">
+            <span class="keyword">type</span> <span class="type">complex</span> = <span class="keyword">record</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;re, im: <span class="type">real</span><br>
+            <span class="keyword">end</span>;
+        </div>
+
+        <p>Здесь <span class="type">complex</span> – имя типа. Переменная состоит из двух полей: <em>re</em> и <em>im</em>, имеющих один и тот же тип (<span class="type">real</span>).</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Пример 2. Даты событий</div>
+        <p>Можно описать следующим образом:</p>
+
+        <div class="code-block">
+            <span class="keyword">type</span> <span class="type">date</span> = <span class="keyword">record</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;month: 1..12;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;day: 1..31;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;year: <span class="type">integer</span><br>
+            <span class="keyword">end</span>;
+        </div>
+
+        <p>В этом примере описан тип <span class="type">date</span>. Запись состоит из трех полей: <em>month</em>, <em>day</em> и <em>year</em>. Каждое поле содержит соответственно данные: целое число в пределах от 1 до 12 (номер месяца), целое число от 1 до 31 (день), целое число (год).</p>
+    </div>
+
+    <div class="valid-examples">
+        <div class="valid-title">Верные записи согласно грамматике G[‹OPR›]</div>
+
+        <div class="code-block">
+            1. <span class="keyword">type</span> <span class="type">Person</span> = <span class="keyword">record</span> name:<span class="type">char</span>; age:<span class="type">integer</span> <span class="keyword">end</span>;<br>
+            2. <span class="keyword">type</span> <span class="type">Product</span> = <span class="keyword">record</span> id:<span class="type">integer</span>; price:<span class="type">real</span>; inStock:<span class="type">boolean</span> <span class="keyword">end</span>;
+        </div>
+    </div>
+</body>
+</html>

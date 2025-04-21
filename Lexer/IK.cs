@@ -18,8 +18,7 @@ namespace Lexer
             InitializeComponent();
 
             Text = "Исходный код";
-            //webBrowser8.Navigate(Directory.GetCurrentDirectory().Replace("\\bin\\Debug", "") + "\\Properties\\Исходный код.html");
-            webBrowser8.DocumentText = Properties.Resources.Исходный_код;
+            richTextBoxCode.Text = Properties.Resources.Исходный_код;
         }
     }
 }

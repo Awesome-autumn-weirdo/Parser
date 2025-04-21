@@ -95,27 +95,38 @@
         <h2>Составляющие грамматики G[‹OPR›]:</h2>
         <p><strong>Z</strong> = &lt;<span class="non-terminal">OPR</span>&gt;;</p>
         
-        <p><strong>V<sub>T</sub></strong> = {
-            <span class="terminal">a</span>, 
-            <span class="terminal">b</span>, 
-            <span class="terminal">c</span>, 
-            ..., 
-            <span class="terminal">z</span>, 
-            <span class="terminal">A</span>, 
-            <span class="terminal">B</span>, 
-            <span class="terminal">C</span>, 
-            ..., 
-            <span class="terminal">Z</span>, 
-            <span class="terminal">=</span>, 
-            <span class="terminal">:</span>, 
-            <span class="terminal">,</span>, 
-            <span class="terminal">;</span>, 
-            <span class="terminal">0</span>, 
-            <span class="terminal">1</span>, 
-            <span class="terminal">2</span>, 
-            ..., 
-            <span class="terminal">9</span>
-        };</p>
+        <p>
+            <strong>V<sub>T</sub></strong> = {
+            <span class="terminal">a</span>,
+            <span class="terminal">b</span>,
+            <span class="terminal">c</span>,
+            ...,
+            <span class="terminal">z</span>,
+            <span class="terminal">A</span>,
+            <span class="terminal">B</span>,
+            <span class="terminal">C</span>,
+            ...,
+            <span class="terminal">Z</span>,
+            <span class="terminal">=</span>,
+            <span class="terminal">:</span>,
+            <span class="terminal">,</span>,
+            <span class="terminal">;</span>,
+            <span class="terminal">0</span>,
+            <span class="terminal">1</span>,
+            <span class="terminal">2</span>,
+            ...,
+            <span class="terminal">9</span>,
+            "<span class="terminal">type</span>",
+            "<span class="terminal">record</span>",
+            "<span class="terminal">end</span>",
+            "<span class="terminal">integer</span>",
+            "<span class="terminal">real</span>",
+            "<span class="terminal">char</span>",
+            "<span class="terminal">boolean</span>",
+            "<span class="terminal">string</span>",
+            "<span class="terminal">var</span>"
+            };
+        </p>
         
         <p><strong>V<sub>N</sub></strong> = {
             &lt;<span class="non-terminal">OPR</span>&gt;, 
@@ -127,16 +138,8 @@
             &lt;<span class="non-terminal">REC</span>&gt;, 
             &lt;<span class="non-terminal">TYPE</span>&gt;, 
             &lt;<span class="non-terminal">END</span>&gt;, 
-            &lt;<span class="non-terminal">SEMICOLON</span>&gt;, 
-            "<span class="terminal">type</span>", 
-            "<span class="terminal">record</span>", 
-            "<span class="terminal">end</span>", 
-            "<span class="terminal">integer</span>", 
-            "<span class="terminal">real</span>", 
-            "<span class="terminal">char</span>", 
-            "<span class="terminal">boolean</span>", 
-            "<span class="terminal">string</span>", 
-            "<span class="terminal">var</span>"
+            &lt;<span class="non-terminal">SEMICOLON</span>&gt;
+            
         }.</p>
     </div>
 </body>

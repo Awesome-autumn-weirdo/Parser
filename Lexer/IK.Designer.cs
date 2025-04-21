@@ -28,24 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.webBrowser8 = new System.Windows.Forms.WebBrowser();
+            this.richTextBoxCode = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
-            // webBrowser8
+            // richTextBoxCode
             // 
-            this.webBrowser8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.webBrowser8.Location = new System.Drawing.Point(0, 0);
-            this.webBrowser8.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webBrowser8.Name = "webBrowser8";
-            this.webBrowser8.Size = new System.Drawing.Size(800, 450);
-            this.webBrowser8.TabIndex = 0;
+            this.richTextBoxCode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richTextBoxCode.Location = new System.Drawing.Point(0, 0);
+            this.richTextBoxCode.Name = "richTextBoxCode";
+            this.richTextBoxCode.Size = new System.Drawing.Size(800, 450);
+            this.richTextBoxCode.TabIndex = 0;
+            this.richTextBoxCode.Text = "";
             // 
             // IK
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.webBrowser8);
+            this.Controls.Add(this.richTextBoxCode);
             this.Name = "IK";
             this.Text = "IK";
             this.ResumeLayout(false);
@@ -54,6 +54,6 @@
 
         #endregion
 
-        private System.Windows.Forms.WebBrowser webBrowser8;
+        private System.Windows.Forms.RichTextBox richTextBoxCode;
     }
 }

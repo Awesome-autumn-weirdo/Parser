@@ -219,7 +219,8 @@ namespace Lexer.Properties {
         ///            border-bottom: 1px solid #eee;
         ///            padding-bottom: 10px;
         ///        }
-        ///    [остаток строки не уместился]&quot;;.
+        ///        .grammar {
+        ///   [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string Грамматика {
             get {
@@ -228,23 +229,25 @@ namespace Lexer.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на &lt;!DOCTYPE html&gt;
-        ///&lt;html lang=&quot;en&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
-        ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-        ///    &lt;title&gt;Scanner.cs - Lexical Analyzer&lt;/title&gt;
-        ///    &lt;style&gt;
-        ///        body {
-        ///            font-family: &apos;Consolas&apos;, &apos;Courier New&apos;, monospace;
-        ///            background-color: #f5f5f5;
-        ///            margin: 0;
-        ///            padding: 20px;
-        ///        }
-        ///        .code-container {
-        ///            background-color: #ffffff;
-        ///            border-radius: 5px;
-        ///            padding [остаток строки не уместился]&quot;;.
+        ///   Ищет локализованную строку, похожую на Parser.cs
+        ///using System;
+        ///using System.Collections.Generic;
+        ///using System.Drawing;
+        ///using System.Text.RegularExpressions;
+        ///using System.Windows.Forms;
+        ///
+        ///namespace Lexer
+        ///{
+        ///    public class RecordParser
+        ///    {
+        ///        private static readonly HashSet&lt;string&gt; Keywords = new HashSet&lt;string&gt; { &quot;type&quot;, &quot;record&quot;, &quot;end&quot;, &quot;real&quot;, &quot;integer&quot;, &quot;string&quot;, &quot;boolean&quot;, &quot;char&quot; };
+        ///
+        ///        private enum TokenType { Keyword, Identifier, Symbol }
+        ///
+        ///        private class Token
+        ///        {
+        ///            public TokenType Type;
+        ///            publi [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string Исходный_код {
             get {
@@ -269,7 +272,8 @@ namespace Lexer.Properties {
         ///        }
         ///        h1 {
         ///            color: #2c3e50;
-        ///            border-bottom: 2px solid #3498d [остаток строки не уместился]&quot;;.
+        ///            border-bottom: 2px solid #3498db;
+        ///            p [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string Классификация {
             get {
@@ -283,18 +287,20 @@ namespace Lexer.Properties {
         ///&lt;head&gt;
         ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
         ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-        ///    &lt;title&gt;Диаграмма состояний грамматики G[OPR]&lt;/title&gt;
+        ///    &lt;title&gt;Граф конечного автомата&lt;/title&gt;
         ///    &lt;style&gt;
+        ///        * {
+        ///            margin: 0;
+        ///            padding: 0;
+        ///            box-sizing: border-box;
+        ///        }
+        ///
         ///        body {
         ///            font-family: &apos;Segoe UI&apos;, Tahoma, Geneva, Verdana, sans-serif;
-        ///            line-height: 1.6;
-        ///            margin: 20px;
-        ///            max-width: 1000px;
+        ///            background-color: #f8f9fa;
         ///            color: #333;
-        ///        }
-        ///        h1 {
-        ///            color: #2c3e50;
-        ///            border-bottom: 2px so [остаток строки не уместился]&quot;;.
+        ///            min-height: 100vh;
+        ///        [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string Методы_анализа {
             get {
@@ -308,21 +314,20 @@ namespace Lexer.Properties {
         ///&lt;head&gt;
         ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
         ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-        ///    &lt;title&gt;Записи в Pascal&lt;/title&gt;
+        ///    &lt;title&gt;Тип record в Pascal&lt;/title&gt;
         ///    &lt;style&gt;
         ///        body {
-        ///            font-family: Arial, sans-serif;
+        ///            font-family: &apos;Segoe UI&apos;, Tahoma, Geneva, Verdana, sans-serif;
         ///            line-height: 1.6;
-        ///            margin: 20px;
+        ///            color: #333;
         ///            max-width: 800px;
+        ///            margin: 0 auto;
+        ///            padding: 20px;
+        ///            background-color: #f9f9f9;
         ///        }
-        ///        h1 {
-        ///            color: #2c3e50;
-        ///        }
-        ///        code {
-        ///            background-color: #f4f4f4;
-        ///            padding: 2px 5px;
-        ///            bo [остаток строки не уместился]&quot;;.
+        ///
+        ///        h1, h2 {
+        ///      [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string Постановка_задачи {
             get {
@@ -336,19 +341,19 @@ namespace Lexer.Properties {
         ///&lt;head&gt;
         ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
         ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-        ///    &lt;title&gt;Список использованных источников&lt;/title&gt;
+        ///    &lt;title&gt;Тип record в Pascal - Список источников&lt;/title&gt;
         ///    &lt;style&gt;
         ///        body {
-        ///            font-family: &apos;Times New Roman&apos;, Times, serif;
-        ///            line-height: 1.5;
-        ///            margin: 40px;
+        ///            font-family: &apos;Segoe UI&apos;, Tahoma, Geneva, Verdana, sans-serif;
+        ///            line-height: 1.6;
+        ///            color: #333;
         ///            max-width: 800px;
+        ///            margin: 0 auto;
+        ///            padding: 20px;
+        ///            background-color: #f9f9f9;
         ///        }
-        ///        h1 {
-        ///            text-align: center;
-        ///            font-size: 16pt;
-        ///            margin-bottom: 30px;
-        ///            f [остаток строки не уместился]&quot;;.
+        ///
+        ///    [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string Список_литературы {
             get {
@@ -389,7 +394,7 @@ namespace Lexer.Properties {
         ///&lt;head&gt;
         ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
         ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-        ///    &lt;title&gt;Тестовые примеры лексического анализатора&lt;/title&gt;
+        ///    &lt;title&gt;Тестовые примеры&lt;/title&gt;
         ///    &lt;style&gt;
         ///        body {
         ///            font-family: &apos;Segoe UI&apos;, Tahoma, Geneva, Verdana, sans-serif;
@@ -400,7 +405,8 @@ namespace Lexer.Properties {
         ///        }
         ///        h1 {
         ///            color: #2c3e50;
-        ///            border-bottom: 2p [остаток строки не уместился]&quot;;.
+        ///            border-bottom: 2px solid #3498db;
+        ///            padding-bott [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string Тестовый_пример {
             get {

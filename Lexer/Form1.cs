@@ -68,7 +68,7 @@ namespace Lexer
 
             this.FormClosing += Form1_FormClosing;
 
-            CreateNewTab(null, "Новый документ", "type Point = record\r\n    x, y: real;\r\n    z: integer\r\nend;");
+            CreateNewTab(null, "Новый документ", "type Point = record\r\n    x, y: real\r\nend;");
         }
 
         private void StatusTimer_Tick(object sender, EventArgs e)
