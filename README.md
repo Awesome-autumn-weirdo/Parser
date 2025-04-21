@@ -50,11 +50,15 @@ end;
 либо терминальные (A → a).
 
 ### 5. Граф конечного автомата
-![ГрафАвтомата(1) drawio](https://github.com/user-attachments/assets/a495841d-8783-4557-b374-08c4085b44bf)
+![ГрафАвтомата(2) drawio](https://github.com/user-attachments/assets/a6f4f9f9-6fc3-4a98-a945-f5f21a039878)
+
 
 
 ### 6. Тестовые примеры
-![изображение](https://github.com/user-attachments/assets/399d5492-3f11-44c2-9d99-6fec0eaaf635)
-![изображение](https://github.com/user-attachments/assets/8c045c99-5fcd-4bb8-9c78-9e3953ded0ec)
+![test1](https://github.com/user-attachments/assets/c36986d3-2574-49d1-bb21-bf4b089585af)
+![test2](https://github.com/user-attachments/assets/f100ab89-b282-49af-b8f6-c60bb533fed6)
+![test3](https://github.com/user-attachments/assets/439e1a32-8485-4296-89b6-b81ae797727d)
+
+
 
 
