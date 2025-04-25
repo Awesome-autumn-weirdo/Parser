@@ -1,178 +1,93 @@
 ﻿using System.Windows.Forms;
 using System;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace Lexer
 {
+    public enum TokenType
+    {
+        Identifier, Number, Plus, Minus, Mul, Div,
+        LParen, RParen, Assign, Semicolon, EOF
+    }
+
+    public class Token
+    {
+        public TokenType Type { get; }
+        public string Value { get; }
+
+        public Token(TokenType type, string value = null)
+        {
+            Type = type;
+            Value = value;
+        }
+
+        public override string ToString() => $"{Type}: {Value}";
+    }
+
     public class Scanner
     {
-        private string[] keywords = { "type", "record", "end", "integer", "real", "char", "boolean", "string", "var" };
-        private string[] operators = { "=", ":", ",", ";" };
-        private string[] separators = { " ", "\t", "\n", "\r" };
+        private readonly string _text;
+        private int _pos;
 
-        public bool Analyze(string text, DataGridView errorsDataGridView, RichTextBox editorRichTextBox)
+        private char Current => _pos < _text.Length ? _text[_pos] : '\0';
+
+        public Scanner(string text)
         {
-            errorsDataGridView.Rows.Clear();
+            _text = text;
+            _pos = 0;
+        }
 
-            int lineNumber = 1;
-            int positionInLine = 0;
-            int globalPosition = 0;
-            bool lastWasKeyword = false;
-            bool isSuccess = true;
+        private char Peek() => _pos + 1 < _text.Length ? _text[_pos + 1] : '\0';
 
-            while (globalPosition < text.Length)
+        public Token GetNextToken()
+        {
+            while (char.IsWhiteSpace(Current)) _pos++;
+
+            if (char.IsLetter(Current))
             {
-                char currentChar = text[globalPosition];
-
-                switch (currentChar)
+                string id = "";
+                while (char.IsLetterOrDigit(Current))
                 {
-                    case '\n':
-                        lineNumber++;
-                        positionInLine = 0;
-                        globalPosition++;
-                        continue;
-
-                    case ' ':
-                    case '\t':
-                        int spaceStart = positionInLine;
-                        while (globalPosition < text.Length && (text[globalPosition] == ' ' || text[globalPosition] == '\t'))
-                        {
-                            globalPosition++;
-                            positionInLine++;
-                        }
-
-                        if (lastWasKeyword)
-                        {
-                            AddTokenToDataGridView(errorsDataGridView, " ", "(пробел)", lineNumber, spaceStart, positionInLine);
-                            lastWasKeyword = false;
-                        }
-                        continue;
-
-                    default:
-
-                        if (IsOperator(currentChar))
-                        {
-                            string token = currentChar.ToString();
-                            int endPosition = positionInLine + 1;
-                            AddTokenToDataGridView(errorsDataGridView, token, "Оператор", lineNumber, positionInLine, endPosition);
-                            globalPosition++;
-                            positionInLine++;
-                            lastWasKeyword = false;
-                            continue;
-                        }
-
-                        if (IsLatinLetter(currentChar))
-                        {
-                            int end = globalPosition;
-                            while (end < text.Length &&
-                                   (IsLatinLetter(text[end]) || char.IsDigit(text[end]) || text[end] == '_'))
-                            {
-                                end++;
-                            }
-
-                            string token = text.Substring(globalPosition, end - globalPosition);
-                            string tokenType = IsKeyword(token) ? "Ключевое слово" : "Идентификатор";
-                            int endPosition = positionInLine + token.Length;
-
-                            AddTokenToDataGridView(errorsDataGridView, token, tokenType, lineNumber, positionInLine, endPosition);
-
-                            globalPosition = end;
-                            positionInLine = endPosition;
-                            lastWasKeyword = tokenType == "Ключевое слово";
-                            continue;
-                        }
-
-                        if (char.IsDigit(currentChar))
-                        {
-                            int end = globalPosition;
-                            bool isReal = false;
-
-                            while (end < text.Length && (char.IsDigit(text[end]) || text[end] == '.' || text[end] == ','))
-                            {
-                                if (text[end] == '.' || text[end] == ',')
-                                {
-                                    if (isReal || end + 1 >= text.Length || !char.IsDigit(text[end + 1]))
-                                        break;
-                                    isReal = true;
-                                }
-                                end++;
-                            }
-
-                            string token = text.Substring(globalPosition, end - globalPosition);
-                            int endPosition = positionInLine + token.Length;
-                            string tokenType = isReal ? "Вещественное число" : "Целое без знака";
-
-                            AddTokenToDataGridView(errorsDataGridView, token, tokenType, lineNumber, positionInLine, endPosition);
-
-                            globalPosition = end;
-                            positionInLine = endPosition;
-                            lastWasKeyword = false;
-                            continue;
-                        }
-
-                        // Обработка цепочки недопустимых символов (в т.ч. русских)
-                        int errorStartGlobal = globalPosition;
-                        int errorStartLine = positionInLine;
-
-                        while (globalPosition < text.Length &&
-                               !IsLatinLetter(text[globalPosition]) &&
-                               !char.IsDigit(text[globalPosition]) &&
-                               !IsOperator(text[globalPosition]) &&
-                               !char.IsWhiteSpace(text[globalPosition]))
-                        {
-                            globalPosition++;
-                            positionInLine++;
-                        }
-
-                        AddTokenToDataGridView(errorsDataGridView, text[errorStartGlobal].ToString(), "Недопустимый символ", lineNumber, errorStartLine, errorStartLine + 1);
-                        HighlightError(editorRichTextBox, errorStartGlobal, 1);
-                        isSuccess = false;
-                        continue;
+                    id += Current;
+                    _pos++;
                 }
+                return new Token(TokenType.Identifier, id);
             }
 
-            return isSuccess;
-        }
-        private bool IsLatinLetter(char ch)
-        {
-            return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
-        }
-
-        private bool IsOperator(char ch) => Array.Exists(operators, op => op[0] == ch);
-
-        private bool IsKeyword(string token) => Array.Exists(keywords, kw => kw == token);
-
-        private void AddTokenToDataGridView(DataGridView dataGridView, string token, string tokenType, int lineNumber, int startPos, int endPos)
-        {
-            string positionRange = $"с {startPos} по {endPos - 1} символ";
-            dataGridView.Rows.Add(GetTokenCode(token, tokenType), tokenType, token, lineNumber, positionRange);
-        }
-
-        private int GetTokenCode(string token, string tokenType)
-        {
-            switch (tokenType)
+            if (char.IsDigit(Current))
             {
-                case "Ключевое слово": return Array.IndexOf(keywords, token) + 1;
-                case "Идентификатор": return 10;
-                case "(пробел)": return 11;
-                case "Оператор": return Array.IndexOf(operators, token) + 12;
-                case "Целое без знака": return 16;
-                case "Вещественное число": return 17;
-                case "Недопустимый символ": return -1;
-                default: return 0;
+                string num = "";
+                while (char.IsDigit(Current))
+                {
+                    num += Current;
+                    _pos++;
+                }
+                return new Token(TokenType.Number, num);
+            }
+
+            switch (Current)
+            {
+                case '+': _pos++; return new Token(TokenType.Plus, "+");
+                case '-': _pos++; return new Token(TokenType.Minus, "-");
+                case '*': _pos++; return new Token(TokenType.Mul, "*");
+                case '/': _pos++; return new Token(TokenType.Div, "/");
+                case '(': _pos++; return new Token(TokenType.LParen, "(");
+                case ')': _pos++; return new Token(TokenType.RParen, ")");
+                case '=': _pos++; return new Token(TokenType.Assign, "=");
+                case ';': _pos++; return new Token(TokenType.Semicolon, ";");
+                case '\0': return new Token(TokenType.EOF);
+                default: throw new Exception($"Неизвестный символ: '{Current}'");
             }
         }
 
-        private void HighlightError(RichTextBox richTextBox, int start, int length)
+        public Token PeekNextToken()
         {
-            int originalSelectionStart = richTextBox.SelectionStart;
-            int originalSelectionLength = richTextBox.SelectionLength;
-
-            richTextBox.Select(start, length);
-            richTextBox.SelectionBackColor = Color.Plum;
-
-            // Возвращаем выделение обратно, чтобы не сбивать курсор
-            richTextBox.Select(originalSelectionStart, originalSelectionLength);
+            int savedPos = _pos;
+            var token = GetNextToken();
+            _pos = savedPos;
+            return token;
         }
     }
+
 }

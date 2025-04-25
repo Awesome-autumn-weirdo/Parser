@@ -65,10 +65,12 @@ namespace Lexer
             Properties.Settings.Default.Reload();
             InitializeDataGridViewColumns(dataGridView1);
             dataGridView1.Font = new Font("Bookman Old Style", Properties.Settings.Default.OutputFontSize);
+            InitializeErrorGrid(dataGridViewErrors);
+
 
             this.FormClosing += Form1_FormClosing;
 
-            CreateNewTab(null, "Новый документ", "type Point = record\r\n    x, y: real\r\nend;");
+            CreateNewTab(null, "Новый документ", "a=b*-c+b*-c;");
         }
 
         private void StatusTimer_Tick(object sender, EventArgs e)
@@ -232,66 +234,102 @@ namespace Lexer
                 dataGridView1.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders);
             }
         }
+        private void InitializeErrorGrid(DataGridView dataGridView)
+        {
+            if (dataGridView != null)
+            {
+                dataGridView.Columns.Clear();
+
+                dataGridView.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "ErrorType",
+                    HeaderText = "Тип ошибки",
+                    Width = 150
+                });
+
+                dataGridView.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "Message",
+                    HeaderText = "Сообщение",
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                });
+
+                dataGridView.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "Line",
+                    HeaderText = "Строка",
+                    Width = 60
+                });
+
+                dataGridView.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "Position",
+                    HeaderText = "Позиция",
+                    Width = 80
+                });
+            }
+        }
+
 
         private void InitializeDataGridViewColumns(DataGridView dataGridView1)
         {
             if (dataGridView1 != null)
             {
-                // Сохраняем текущие настройки шрифта
                 Font currentFont = new Font("Bookman Old Style", currentOutputFontSize);
                 DataGridViewCellStyle cellStyle = new DataGridViewCellStyle { Font = currentFont };
 
-                // Очищаем старые столбцы перед добавлением новых
                 dataGridView1.Columns.Clear();
 
-                // Код лексемы
+                // Тип тетрады (опционально)
                 dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    Name = "TokenCode",
-                    HeaderText = "Код лексемы",
-                    Width = 90,
-                    DefaultCellStyle = cellStyle
-                });
-
-                // Тип лексемы
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "TokenType",
-                    HeaderText = "Тип лексемы",
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    Width = 225,
-                    DefaultCellStyle = cellStyle
-                });
-
-                // Сама лексема
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "TokenValue",
-                    HeaderText = "Лексема",
+                    Name = "QuadType",
+                    HeaderText = "Тип",
                     AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                     Width = 70,
                     DefaultCellStyle = cellStyle
                 });
 
-                // Номер строки
+                // Оператор (op)
                 dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    Name = "LineNumber",
-                    HeaderText = "Номер строки",
-                    Width = 70,
+                    Name = "Op",
+                    HeaderText = "Оператор",
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                    Width = 80,
                     DefaultCellStyle = cellStyle
                 });
 
-                // Позиция в строке
+                // Аргумент 1 (arg1)
                 dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    Name = "Position",
-                    HeaderText = "Позиция",
-                    Width = 150,
+                    Name = "Arg1",
+                    HeaderText = "Аргумент 1",
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                    Width = 100,
                     DefaultCellStyle = cellStyle
                 });
 
-                // Устанавливаем шрифт для заголовков
+                // Аргумент 2 (arg2)
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "Arg2",
+                    HeaderText = "Аргумент 2",
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                    Width = 100,
+                    DefaultCellStyle = cellStyle
+                });
+
+                // Результат (result)
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = "Result",
+                    HeaderText = "Результат",
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                    Width = 100,
+                    DefaultCellStyle = cellStyle
+                });
+
                 dataGridView1.ColumnHeadersDefaultCellStyle.Font = currentFont;
                 dataGridView1.Font = currentFont;
             }
@@ -870,115 +908,55 @@ namespace Lexer
             оПрограммеToolStripMenuItem_Click(sender, e);
         }
 
-        //private void Analyze()
-        //{
-        //    if (tabControl1.SelectedTab == null || dataGridView1 == null) return;
-
-        //    var splitContainer = tabControl1.SelectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
-        //    if (splitContainer == null) return;
-
-        //    var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
-        //    if (editorRichTextBox == null) return;
-
-        //    SetStatus("Выполнение синтаксического анализа...");
-        //    try
-        //    {
-        //        string inputText = editorRichTextBox.Text;
-        //        var parser = new RecordParser();
-        //        var errors = parser.ParseRecord(inputText, editorRichTextBox);
-        //        var lexErrors = parser.Tokenize(inputText,editorRichTextBox);
-
-        //        dataGridView1.Invoke((MethodInvoker)delegate
-        //        {
-        //            dataGridView1.Rows.Clear();
-
-        //            if (lexErrors.Count != 0)
-        //            {
-        //                foreach (var lexError in lexErrors)
-        //                {
-        //                    // Добавляем ошибку без информации о позиции
-        //                    dataGridView1.Rows.Add(
-        //                        "Ошибка",
-        //                        lexErrors,
-        //                        "", // Доп. информация
-        //                        "", // Строка (будет заполнено отдельно)
-        //                        ""  // Позиция в строке (будет заполнено отдельно)
-        //                    );
-        //                }
-        //            }
-
-        //            if (errors.Count == 0)
-        //            {
-        //                dataGridView1.Rows.Add("0", "Успех", "Синтаксис правильный", "1", "1");
-        //                MessageBox.Show("Анализ завершен успешно. Ошибок не найдено.", "Результат анализа",
-        //                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //            }
-        //            else
-        //            {
-        //                foreach (var error in errors)
-        //                {
-        //                    // Добавляем ошибку без информации о позиции
-        //                    dataGridView1.Rows.Add(
-        //                        "Ошибка",
-        //                        error,
-        //                        "", // Доп. информация
-        //                        "", // Строка (будет заполнено отдельно)
-        //                        ""  // Позиция в строке (будет заполнено отдельно)
-        //                    );
-        //                }
-
-        //                MessageBox.Show($"Найдено {errors.Count} ошибок.", "Результат анализа",
-        //                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //            }
-        //            SetStatus("Синтаксический анализ завершен");
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Ошибка при анализе: {ex.Message}", "Ошибка",
-        //                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //}
-
-        //private void toolStripButton9_Click(object sender, EventArgs e)
-        //{
-        //    Analyze();
-        //}
-
-        //private void пускToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    Analyze();
-        //}
 
         private void пускToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetStatus("Выполнение лексического анализа...");
+            SetStatus("Анализ...");
+
+            if (tabControl1.SelectedTab == null) return;
+            var splitContainer = tabControl1.SelectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
+            if (splitContainer == null) return;
+
+            var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
+            if (editorRichTextBox == null) return;
+
             try
             {
-                if (tabControl1.SelectedTab == null) return;
+                // Очистка ошибок
+                dataGridViewErrors.Rows.Clear();
+                InitializeErrorGrid(dataGridViewErrors);
 
-                // Получаем SplitContainer из текущей вкладки
-                var splitContainer = tabControl1.SelectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
-                if (splitContainer == null) return;
+                // Синтаксический и лексический анализ
+                string code = editorRichTextBox.Text;
+                Scanner scanner = new Scanner(code);
+                Parser parser = new Parser(scanner);
 
-                // Получаем RichTextBox из Panel2 SplitContainer
-                var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
-                if (editorRichTextBox == null) return;
+                // Построение тетрад
+                var quads = parser.Parse();
 
-                // Используем существующий dataGridView1, который должен быть в splitcontainer1.Panel2
-                if (dataGridView1 == null) return;
-                UpdateOutputFontSize();
-                // Анализируем текст
-                Scanner scanner = new Scanner();
+                // Отображение тетрад
+                InitializeDataGridViewColumns(dataGridView1);
                 dataGridView1.Rows.Clear();
-                scanner.Analyze(editorRichTextBox.Text, dataGridView1, editorRichTextBox);
-                SetStatus("Лексический анализ завершен");
+                foreach (var quad in quads)
+                {
+                    dataGridView1.Rows.Add("тетрада", quad.Op, quad.Arg1, quad.Arg2, quad.Result);
+                }
+
+                SetStatus("Синтаксический анализ завершён");
             }
             catch (Exception ex)
             {
-                SetStatus($"Ошибка анализа: {ex.Message}");
+                // Получаем позицию ошибки
+                int line = editorRichTextBox.GetLineFromCharIndex(editorRichTextBox.SelectionStart) + 1;
+                int pos = editorRichTextBox.SelectionStart - editorRichTextBox.GetFirstCharIndexOfCurrentLine() + 1;
+
+                InitializeErrorGrid(dataGridViewErrors);
+                dataGridViewErrors.Rows.Clear();
+                dataGridViewErrors.Rows.Add("Синтаксис", ex.Message, line, pos);
+                SetStatus("Ошибка анализа");
             }
         }
+
 
         private void toolStripButton9_Click(object sender, EventArgs e)
         {
