@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Lexer
 {
@@ -39,7 +34,7 @@ namespace Lexer
             statusLabel = new ToolStripStatusLabel();
 
             // Настройка внешнего вида
-            statusStrip.BackColor = Color.DarkSeaGreen;
+            statusStrip.BackColor = Color.PaleVioletRed;
             statusLabel.Spring = true; // Растягиваем на всю ширину
             statusLabel.TextAlign = ContentAlignment.MiddleLeft;
 
@@ -66,7 +61,7 @@ namespace Lexer
             InitializeDataGridViewColumns(dataGridView1);
             dataGridView1.Font = new Font("Bookman Old Style", Properties.Settings.Default.OutputFontSize);
             InitializeErrorGrid(dataGridViewErrors);
-
+            dataGridViewErrors.Font = new Font("Bookman Old Style", Properties.Settings.Default.OutputFontSize);
 
             this.FormClosing += Form1_FormClosing;
 
@@ -103,7 +98,7 @@ namespace Lexer
                 Height = 200,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterParent,
-                BackColor = Color.Honeydew // Задаем цвет фона формы
+                BackColor = Color.LavenderBlush // Задаем цвет фона формы
             };
 
             // Создаем элементы управления
@@ -114,7 +109,7 @@ namespace Lexer
                 Top = 20,
                 Width = 100,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Honeydew // Устанавливаем цвет фона
+                BackColor = Color.LavenderBlush // Устанавливаем цвет фона
             };
 
             NumericUpDown editorSize = new NumericUpDown()
@@ -126,7 +121,7 @@ namespace Lexer
                 Maximum = 36,
                 Value = (decimal)currentEditorFontSize,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Honeydew
+                BackColor = Color.LavenderBlush
             };
 
             Label outputLabel = new Label()
@@ -136,7 +131,7 @@ namespace Lexer
                 Top = 60,
                 Width = 150,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Honeydew
+                BackColor = Color.LavenderBlush
             };
 
             NumericUpDown outputSize = new NumericUpDown()
@@ -148,7 +143,7 @@ namespace Lexer
                 Maximum = 36,
                 Value = (decimal)currentOutputFontSize,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Honeydew
+                BackColor = Color.LavenderBlush
             };
 
             System.Windows.Forms.Button okButton = new System.Windows.Forms.Button()
@@ -160,7 +155,7 @@ namespace Lexer
                 Height = 35,
                 DialogResult = DialogResult.OK,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Linen
+                BackColor = Color.PaleVioletRed
             };
 
             // Добавляем элементы на форму
@@ -232,6 +227,21 @@ namespace Lexer
 
                 // Обновляем высоту строк
                 dataGridView1.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders);
+            }
+
+            // Обновляем таблицу ошибок
+            if (dataGridViewErrors != null)
+            {
+                // Создаем новый шрифт с текущими настройками
+                Font newFont = new Font("Bookman Old Style", currentOutputFontSize);
+
+                dataGridViewErrors.Font = newFont;
+                foreach (DataGridViewColumn column in dataGridViewErrors.Columns)
+                {
+                    column.DefaultCellStyle.Font = newFont;
+                }
+                dataGridViewErrors.ColumnHeadersDefaultCellStyle.Font = newFont;
+                dataGridViewErrors.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders);
             }
         }
 
@@ -330,35 +340,45 @@ namespace Lexer
         {
             if (dataGridView != null)
             {
+                Font currentFont = new Font("Bookman Old Style", currentOutputFontSize);
+                DataGridViewCellStyle cellStyle = new DataGridViewCellStyle { Font = currentFont };
+
                 dataGridView.Columns.Clear();
 
                 dataGridView.Columns.Add(new DataGridViewTextBoxColumn
                 {
                     Name = "ErrorType",
                     HeaderText = "Тип ошибки",
-                    Width = 150
+                    Width = 150,
+                    DefaultCellStyle = cellStyle
                 });
 
                 dataGridView.Columns.Add(new DataGridViewTextBoxColumn
                 {
                     Name = "Message",
                     HeaderText = "Сообщение",
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                    DefaultCellStyle = cellStyle
                 });
 
                 dataGridView.Columns.Add(new DataGridViewTextBoxColumn
                 {
                     Name = "Line",
                     HeaderText = "Строка",
-                    Width = 60
+                    Width = 100,
+                    DefaultCellStyle = cellStyle
                 });
 
                 dataGridView.Columns.Add(new DataGridViewTextBoxColumn
                 {
                     Name = "Position",
                     HeaderText = "Позиция",
-                    Width = 80
+                    Width = 100,
+                    DefaultCellStyle = cellStyle
                 });
+
+                dataGridView1.ColumnHeadersDefaultCellStyle.Font = currentFont;
+                dataGridView1.Font = currentFont;
             }
         }
 
@@ -693,14 +713,14 @@ namespace Lexer
             Panel lineNumberPanel = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = Color.Linen
+                BackColor = Color.LavenderBlush
             };
 
             // RichTextBox для редактирования кода
             RichTextBox editorRichTextBox = new RichTextBox
             {
                 Dock = DockStyle.Fill,
-                BackColor = Color.Linen,
+                BackColor = Color.LavenderBlush,
                 Text = fileContent,
                 Tag = filePath,
                 Name = "editorRichTextBox",
@@ -751,6 +771,7 @@ namespace Lexer
                 e.Graphics.DrawString((i + 1).ToString(), richTextBox.Font, Brushes.Black, new PointF(5, y));
             }
         }
+
         private void открытьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetStatus("Открытие файла...");

@@ -94,7 +94,7 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.BackColor = System.Drawing.Color.Honeydew;
+            this.menuStrip1.BackColor = System.Drawing.Color.LavenderBlush;
             this.menuStrip1.Font = new System.Drawing.Font("Bookman Old Style", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -346,7 +346,7 @@
             // 
             // toolStrip1
             // 
-            this.toolStrip1.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.toolStrip1.BackColor = System.Drawing.Color.PaleVioletRed;
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(30, 30);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
@@ -479,7 +479,7 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.BackColor = System.Drawing.Color.Honeydew;
+            this.splitContainer1.BackColor = System.Drawing.Color.LavenderBlush;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 66);
             this.splitContainer1.Name = "splitContainer1";
@@ -531,9 +531,9 @@
             // 
             // dataGridView1
             // 
-            this.dataGridView1.BackgroundColor = System.Drawing.Color.Linen;
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.LavenderBlush;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.Honeydew;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.LavenderBlush;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Bookman Old Style", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
@@ -550,7 +550,7 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.GridColor = System.Drawing.Color.Olive;
+            this.dataGridView1.GridColor = System.Drawing.Color.PaleVioletRed;
             this.dataGridView1.Location = new System.Drawing.Point(3, 3);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
@@ -572,6 +572,7 @@
             // 
             // dataGridViewErrors
             // 
+            this.dataGridViewErrors.BackgroundColor = System.Drawing.Color.LavenderBlush;
             this.dataGridViewErrors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewErrors.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewErrors.Location = new System.Drawing.Point(3, 3);
