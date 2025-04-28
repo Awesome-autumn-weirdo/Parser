@@ -1,14 +1,11 @@
-﻿using System.Windows.Forms;
-using System;
-using System.Drawing;
-using System.Collections.Generic;
+﻿using System;
 
 namespace Lexer
 {
     public enum TokenType
     {
-        Identifier, Number, Plus, Minus, Mul, Div,
-        LParen, RParen, Assign, Semicolon, EOF
+        Identifier, Plus, Minus, Mul, Div,
+        LParen, RParen, EOF
     }
 
     public class Token
@@ -29,65 +26,114 @@ namespace Lexer
     {
         private readonly string _text;
         private int _pos;
+        private int _line = 1;
+        private int _column = 1;
 
         private char Current => _pos < _text.Length ? _text[_pos] : '\0';
 
         public Scanner(string text)
         {
-            _text = text;
+            _text = text ?? throw new ArgumentNullException(nameof(text));
             _pos = 0;
         }
 
-        private char Peek() => _pos + 1 < _text.Length ? _text[_pos + 1] : '\0';
+        public (int line, int column) GetCurrentPosition() => (_line, _column);
+
+        private void AdvancePosition()
+        {
+            if (Current == '\n')
+            {
+                _line++;
+                _column = 1;
+            }
+            else
+            {
+                _column++;
+            }
+            _pos++;
+        }
 
         public Token GetNextToken()
         {
-            while (char.IsWhiteSpace(Current)) _pos++;
+            while (char.IsWhiteSpace(Current))
+            {
+                AdvancePosition();
+            }
 
             if (char.IsLetter(Current))
             {
                 string id = "";
-                while (char.IsLetterOrDigit(Current))
+                while (char.IsLetter(Current))
                 {
                     id += Current;
-                    _pos++;
+                    AdvancePosition();
                 }
                 return new Token(TokenType.Identifier, id);
             }
 
-            if (char.IsDigit(Current))
+            var currentChar = Current;
+            TokenType tokenType;
+
+            switch (currentChar)
             {
-                string num = "";
-                while (char.IsDigit(Current))
-                {
-                    num += Current;
-                    _pos++;
-                }
-                return new Token(TokenType.Number, num);
+                case '+':
+                    tokenType = TokenType.Plus;
+                    break;
+                case '-':
+                    tokenType = TokenType.Minus;
+                    break;
+                case '*':
+                    tokenType = TokenType.Mul;
+                    break;
+                case '/':
+                    tokenType = TokenType.Div;
+                    break;
+                case '(':
+                    tokenType = TokenType.LParen;
+                    break;
+                case ')':
+                    tokenType = TokenType.RParen;
+                    break;
+                case '\0':
+                    tokenType = TokenType.EOF;
+                    break;
+                default:
+                    throw new LexerException($"Неизвестный символ: '{currentChar}'", _line, _column);
             }
 
-            switch (Current)
-            {
-                case '+': _pos++; return new Token(TokenType.Plus, "+");
-                case '-': _pos++; return new Token(TokenType.Minus, "-");
-                case '*': _pos++; return new Token(TokenType.Mul, "*");
-                case '/': _pos++; return new Token(TokenType.Div, "/");
-                case '(': _pos++; return new Token(TokenType.LParen, "(");
-                case ')': _pos++; return new Token(TokenType.RParen, ")");
-                case '=': _pos++; return new Token(TokenType.Assign, "=");
-                case ';': _pos++; return new Token(TokenType.Semicolon, ";");
-                case '\0': return new Token(TokenType.EOF);
-                default: throw new Exception($"Неизвестный символ: '{Current}'");
-            }
+            AdvancePosition();
+            return new Token(tokenType, currentChar.ToString());
         }
 
         public Token PeekNextToken()
         {
             int savedPos = _pos;
-            var token = GetNextToken();
-            _pos = savedPos;
-            return token;
+            int savedLine = _line;
+            int savedColumn = _column;
+
+            try
+            {
+                return GetNextToken();
+            }
+            finally
+            {
+                _pos = savedPos;
+                _line = savedLine;
+                _column = savedColumn;
+            }
         }
     }
 
+    public class LexerException : Exception
+    {
+        public int Line { get; }
+        public int Column { get; }
+
+        public LexerException(string message, int line, int column)
+            : base($"{message} (строка {line}, позиция {column})")
+        {
+            Line = line;
+            Column = column;
+        }
+    }
 }

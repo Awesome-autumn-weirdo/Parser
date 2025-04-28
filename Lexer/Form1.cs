@@ -70,7 +70,7 @@ namespace Lexer
 
             this.FormClosing += Form1_FormClosing;
 
-            CreateNewTab(null, "Новый документ", "a=b*-c+b*-c;");
+            CreateNewTab(null, "Новый документ", "a+b*(c-d)\r\n");
         }
 
         private void StatusTimer_Tick(object sender, EventArgs e)
@@ -234,6 +234,98 @@ namespace Lexer
                 dataGridView1.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders);
             }
         }
+
+        private void пускToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetStatus("Анализ...");
+
+            if (tabControl1.SelectedTab == null)
+            {
+                SetStatus("Ошибка: не выбрана вкладка");
+                return;
+            }
+
+            var splitContainer = tabControl1.SelectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
+            if (splitContainer == null)
+            {
+                SetStatus("Ошибка: не найден SplitContainer");
+                return;
+            }
+
+            var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
+            if (editorRichTextBox == null)
+            {
+                SetStatus("Ошибка: не найден редактор кода");
+                return;
+            }
+
+            try
+            {
+                // Очистка предыдущих результатов
+                dataGridViewErrors.Rows.Clear();
+                dataGridView1.Rows.Clear();
+                InitializeErrorGrid(dataGridViewErrors);
+                InitializeDataGridViewColumns(dataGridView1);
+
+                // Синтаксический и лексический анализ
+                string code = editorRichTextBox.Text;
+                Scanner scanner = new Scanner(code);
+                Parser parser = new Parser(scanner);
+
+                // Построение тетрад
+                List<Quad> quads;
+                try
+                {
+                    quads = parser.Parse();
+                }
+                catch (ParserException ex)
+                {
+                    // Добавляем все ошибки в таблицу
+                    foreach (var error in ex.Errors)
+                    {
+                        dataGridViewErrors.Rows.Add("Синтаксис", error.Message, error.Line, error.Column);
+                    }
+
+                    // Если есть какие-то тетрады, показываем их
+                    if (parser.Errors.Count > 0 && ex.Errors.Count != parser.Errors.Count)
+                    {
+                        foreach (var error in parser.Errors)
+                        {
+                            dataGridViewErrors.Rows.Add("Синтаксис", error.Message, error.Line, error.Column);
+                        }
+                    }
+
+                    SetStatus($"Анализ завершён с ошибками ({parser.Errors.Count})");
+                    return;
+                }
+
+                // Отображение тетрад
+                foreach (var quad in quads)
+                {
+                    dataGridView1.Rows.Add("тетрада", quad.Op, quad.Arg1, quad.Arg2, quad.Result);
+                }
+
+                SetStatus("Синтаксический анализ завершён успешно");
+            }
+            catch (Exception ex)
+            {
+                int line = 1;
+                int pos = 1;
+
+                try
+                {
+                    line = editorRichTextBox.GetLineFromCharIndex(editorRichTextBox.SelectionStart) + 1;
+                    pos = editorRichTextBox.SelectionStart - editorRichTextBox.GetFirstCharIndexOfCurrentLine() + 1;
+                }
+                catch { /* игнорируем ошибки позиционирования */ }
+
+                dataGridViewErrors.Rows.Add("Ошибка", ex.Message, line, pos);
+                SetStatus("Ошибка анализа");
+            }
+        }
+
+
+
         private void InitializeErrorGrid(DataGridView dataGridView)
         {
             if (dataGridView != null)
@@ -906,55 +998,6 @@ namespace Lexer
         private void toolStripButton11_Click(object sender, EventArgs e)
         {
             оПрограммеToolStripMenuItem_Click(sender, e);
-        }
-
-
-        private void пускToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SetStatus("Анализ...");
-
-            if (tabControl1.SelectedTab == null) return;
-            var splitContainer = tabControl1.SelectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
-            if (splitContainer == null) return;
-
-            var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
-            if (editorRichTextBox == null) return;
-
-            try
-            {
-                // Очистка ошибок
-                dataGridViewErrors.Rows.Clear();
-                InitializeErrorGrid(dataGridViewErrors);
-
-                // Синтаксический и лексический анализ
-                string code = editorRichTextBox.Text;
-                Scanner scanner = new Scanner(code);
-                Parser parser = new Parser(scanner);
-
-                // Построение тетрад
-                var quads = parser.Parse();
-
-                // Отображение тетрад
-                InitializeDataGridViewColumns(dataGridView1);
-                dataGridView1.Rows.Clear();
-                foreach (var quad in quads)
-                {
-                    dataGridView1.Rows.Add("тетрада", quad.Op, quad.Arg1, quad.Arg2, quad.Result);
-                }
-
-                SetStatus("Синтаксический анализ завершён");
-            }
-            catch (Exception ex)
-            {
-                // Получаем позицию ошибки
-                int line = editorRichTextBox.GetLineFromCharIndex(editorRichTextBox.SelectionStart) + 1;
-                int pos = editorRichTextBox.SelectionStart - editorRichTextBox.GetFirstCharIndexOfCurrentLine() + 1;
-
-                InitializeErrorGrid(dataGridViewErrors);
-                dataGridViewErrors.Rows.Clear();
-                dataGridViewErrors.Rows.Add("Синтаксис", ex.Message, line, pos);
-                SetStatus("Ошибка анализа");
-            }
         }
 
 

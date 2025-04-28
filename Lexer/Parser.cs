@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace Lexer
 {
@@ -21,7 +18,10 @@ namespace Lexer
             Result = result;
         }
 
-        public override string ToString() => $"({Op}, {Arg1}, {Arg2}, {Result})";
+        public override string ToString()
+        {
+            return $"({Op}, {Arg1}, {Arg2}, {Result})";
+        }
     }
 
     public class Parser
@@ -30,48 +30,86 @@ namespace Lexer
         private Token _currentToken;
         private readonly List<Quad> _quads = new List<Quad>();
         private int _tempCounter = 1;
+        private readonly List<ParserError> _errors = new List<ParserError>();
 
         public Parser(Scanner scanner)
         {
-            _scanner = scanner;
+            _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
             _currentToken = _scanner.GetNextToken();
         }
 
+        public IReadOnlyList<ParserError> Errors => _errors;
+
         private void Eat(TokenType type)
         {
-            if (_currentToken.Type == type)
-                _currentToken = _scanner.GetNextToken();
-            else
-                throw new Exception($"Ожидался {type}, получено {_currentToken.Type}");
-        }
-
-        private string NewTemp() => $"t{_tempCounter++}";
-
-        public List<Quad> Parse()
-        {
-            while (_currentToken.Type != TokenType.EOF)
+            try
             {
-                if (_currentToken.Type == TokenType.Identifier &&
-                    _scanner.PeekNextToken().Type == TokenType.Assign)
+                if (_currentToken.Type == type)
                 {
-                    ParseAssignment();
+                    _currentToken = _scanner.GetNextToken();
                 }
                 else
                 {
-                    ParseExpression();
+                    var pos = _scanner.GetCurrentPosition();
+                    _errors.Add(new ParserError(
+                        $"Ожидался {type}, получено {_currentToken.Type}",
+                        pos.line,
+                        pos.column));
+
+                    // Попытка восстановления: пропускаем текущий токен
+                    _currentToken = _scanner.GetNextToken();
                 }
             }
-            return _quads;
+            catch (LexerException ex)
+            {
+                _errors.Add(new ParserError(ex.Message, ex.Line, ex.Column));
+                throw;
+            }
         }
 
-        private void ParseAssignment()
+        private string NewTemp()
         {
-            string left = _currentToken.Value;
-            Eat(TokenType.Identifier);
-            Eat(TokenType.Assign);
-            string right = ParseExpression();
-            _quads.Add(new Quad("=", right, null, left));
-            Eat(TokenType.Semicolon);
+            return $"t{_tempCounter++}";
+        }
+
+        public List<Quad> Parse()
+        {
+            try
+            {
+                while (_currentToken.Type != TokenType.EOF)
+                {
+                    if (_currentToken.Type == TokenType.Identifier ||
+                        _currentToken.Type == TokenType.LParen ||
+                        _currentToken.Type == TokenType.Minus)
+                    {
+                        ParseExpression();
+                    }
+                    else
+                    {
+                        var pos = _scanner.GetCurrentPosition();
+                        _errors.Add(new ParserError(
+                            $"Неверный токен {_currentToken.Type} в начале выражения",
+                            pos.line,
+                            pos.column));
+                        Eat(_currentToken.Type); // Пропускаем ошибочный токен
+                    }
+                }
+
+                if (_errors.Count > 0)
+                {
+                    throw new ParserException("Обнаружены ошибки при разборе", _errors);
+                }
+
+                return _quads;
+            }
+            catch (Exception ex)
+            {
+                if (!(ex is ParserException))
+                {
+                    throw new ParserException("Ошибка при разборе", _errors, ex);
+                }
+                throw;
+            }
         }
 
         private string ParseExpression()
@@ -86,10 +124,23 @@ namespace Lexer
             {
                 string op = _currentToken.Value;
                 Eat(_currentToken.Type);
-                string right = ParseTerm();
-                string result = NewTemp();
-                _quads.Add(new Quad(op, left, right, result));
-                left = result;
+
+                try
+                {
+                    string right = ParseTerm();
+                    string result = NewTemp();
+                    _quads.Add(new Quad(op, left, right, result));
+                    left = result;
+                }
+                catch (ParserException)
+                {
+                    // Продолжаем разбор с текущей позиции
+                    if (_currentToken.Type != TokenType.Plus &&
+                        _currentToken.Type != TokenType.Minus)
+                    {
+                        break;
+                    }
+                }
             }
             return left;
         }
@@ -106,46 +157,99 @@ namespace Lexer
             {
                 string op = _currentToken.Value;
                 Eat(_currentToken.Type);
-                string right = ParseFactor();
-                string result = NewTemp();
-                _quads.Add(new Quad(op, left, right, result));
-                left = result;
+
+                try
+                {
+                    string right = ParseFactor();
+                    string result = NewTemp();
+                    _quads.Add(new Quad(op, left, right, result));
+                    left = result;
+                }
+                catch (ParserException)
+                {
+                    // Продолжаем разбор с текущей позиции
+                    if (_currentToken.Type != TokenType.Mul &&
+                        _currentToken.Type != TokenType.Div)
+                    {
+                        break;
+                    }
+                }
             }
             return left;
         }
 
         private string ParseFactor()
         {
-            if (_currentToken.Type == TokenType.Identifier)
+            try
             {
-                string val = _currentToken.Value;
-                Eat(TokenType.Identifier);
-                return val;
-            }
-            else if (_currentToken.Type == TokenType.Number)
-            {
-                string val = _currentToken.Value;
-                Eat(TokenType.Number);
-                return val;
-            }
-            else if (_currentToken.Type == TokenType.LParen)
-            {
-                Eat(TokenType.LParen);
-                string val = ParseExpression();
-                Eat(TokenType.RParen);
-                return val;
-            }
-            else if (_currentToken.Type == TokenType.Minus) // Унарный минус
-            {
-                Eat(TokenType.Minus);
-                string val = ParseFactor();
-                string result = NewTemp();
-                _quads.Add(new Quad("minus", val, null, result));
-                return result;
-            }
+                if (_currentToken.Type == TokenType.Identifier)
+                {
+                    string val = _currentToken.Value;
+                    Eat(TokenType.Identifier);
+                    return val;
+                }
+                else if (_currentToken.Type == TokenType.LParen)
+                {
+                    Eat(TokenType.LParen);
+                    string val = ParseExpression();
+                    Eat(TokenType.RParen);
+                    return val;
+                }
+                else if (_currentToken.Type == TokenType.Minus)
+                {
+                    Eat(TokenType.Minus);
+                    string val = ParseFactor();
+                    string result = NewTemp();
+                    _quads.Add(new Quad("minus", val, null, result));
+                    return result;
+                }
 
-            throw new Exception($"Ожидался идентификатор, число или выражение в скобках, получено {_currentToken.Type}");
+                var pos = _scanner.GetCurrentPosition();
+                throw new ParserException(
+                    $"Ожидался идентификатор или выражение в скобках, получено {_currentToken.Type}",
+                    pos.line,
+                    pos.column);
+            }
+            catch (ParserException ex)
+            {
+                _errors.Add(new ParserError(ex.Message, ex.Line, ex.Column));
+                throw;
+            }
         }
     }
 
+    public class ParserError
+    {
+        public string Message { get; }
+        public int Line { get; }
+        public int Column { get; }
+
+        public ParserError(string message, int line, int column)
+        {
+            Message = message;
+            Line = line;
+            Column = column;
+        }
+    }
+
+    public class ParserException : Exception
+    {
+        public int Line { get; }
+        public int Column { get; }
+        public IReadOnlyList<ParserError> Errors { get; }
+
+        public ParserException(string message, int line, int column)
+            : base(message)
+        {
+            Line = line;
+            Column = column;
+            Errors = new List<ParserError> { new ParserError(message, line, column) };
+        }
+
+        public ParserException(string message, IEnumerable<ParserError> errors, Exception innerException = null)
+            : base(message, innerException)
+        {
+            Errors = new List<ParserError>(errors);
+        }
+    }
 }
