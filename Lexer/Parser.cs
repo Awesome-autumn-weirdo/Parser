@@ -55,8 +55,6 @@ namespace Lexer
                         $"Ожидался {type}, получено {_currentToken.Type}",
                         pos.line,
                         pos.column));
-
-                    // Попытка восстановления: пропускаем текущий токен
                     _currentToken = _scanner.GetNextToken();
                 }
             }
@@ -91,7 +89,7 @@ namespace Lexer
                             $"Неверный токен {_currentToken.Type} в начале выражения",
                             pos.line,
                             pos.column));
-                        Eat(_currentToken.Type); // Пропускаем ошибочный токен
+                        Eat(_currentToken.Type);
                     }
                 }
 
@@ -134,7 +132,6 @@ namespace Lexer
                 }
                 catch (ParserException)
                 {
-                    // Продолжаем разбор с текущей позиции
                     if (_currentToken.Type != TokenType.Plus &&
                         _currentToken.Type != TokenType.Minus)
                     {
@@ -167,7 +164,6 @@ namespace Lexer
                 }
                 catch (ParserException)
                 {
-                    // Продолжаем разбор с текущей позиции
                     if (_currentToken.Type != TokenType.Mul &&
                         _currentToken.Type != TokenType.Div)
                     {

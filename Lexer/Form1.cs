@@ -310,10 +310,12 @@ namespace Lexer
                 }
 
                 // Отображение тетрад
+                int lineNumber = 0;
                 foreach (var quad in quads)
                 {
-                    dataGridView1.Rows.Add("тетрада", quad.Op, quad.Arg1, quad.Arg2, quad.Result);
+                    dataGridView1.Rows.Add(lineNumber++, quad.Op, quad.Arg1, quad.Arg2, quad.Result);
                 }
+
 
                 SetStatus("Синтаксический анализ завершён успешно");
             }
