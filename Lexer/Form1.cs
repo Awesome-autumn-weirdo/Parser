@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Lexer
@@ -60,7 +61,7 @@ namespace Lexer
             Properties.Settings.Default.Reload();
             InitializeDataGridViewColumns(dataGridView1);
             dataGridView1.Font = new Font("Bookman Old Style", Properties.Settings.Default.OutputFontSize);
-            InitializeErrorGrid(dataGridViewErrors);
+            //InitializeErrorGrid(dataGridViewErrors);
             dataGridViewErrors.Font = new Font("Bookman Old Style", Properties.Settings.Default.OutputFontSize);
 
             this.FormClosing += Form1_FormClosing;
@@ -245,145 +246,124 @@ namespace Lexer
             }
         }
 
+        //Задачи 1,3
         private void пускToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetStatus("Анализ...");
-
-            if (tabControl1.SelectedTab == null)
-            {
-                SetStatus("Ошибка: не выбрана вкладка");
-                return;
-            }
-
-            var splitContainer = tabControl1.SelectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
-            if (splitContainer == null)
-            {
-                SetStatus("Ошибка: не найден SplitContainer");
-                return;
-            }
-
-            var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
-            if (editorRichTextBox == null)
-            {
-                SetStatus("Ошибка: не найден редактор кода");
-                return;
-            }
-
             try
             {
                 // Очистка предыдущих результатов
-                dataGridViewErrors.Rows.Clear();
                 dataGridView1.Rows.Clear();
-                InitializeErrorGrid(dataGridViewErrors);
                 InitializeDataGridViewColumns(dataGridView1);
 
-                // Синтаксический и лексический анализ
-                string code = editorRichTextBox.Text;
-                Scanner scanner = new Scanner(code);
-                Parser parser = new Parser(scanner);
-
-                // Построение тетрад
-                List<Quad> quads;
-                try
+                // Получаем активную вкладку
+                TabPage selectedTab = tabControl1.SelectedTab;
+                if (selectedTab == null)
                 {
-                    quads = parser.Parse();
-                }
-                catch (ParserException ex)
-                {
-                    // Добавляем все ошибки в таблицу
-                    foreach (var error in ex.Errors)
-                    {
-                        dataGridViewErrors.Rows.Add("Синтаксис", error.Message, error.Line, error.Column);
-                    }
-
-                    // Если есть какие-то тетрады, показываем их
-                    if (parser.Errors.Count > 0 && ex.Errors.Count != parser.Errors.Count)
-                    {
-                        foreach (var error in parser.Errors)
-                        {
-                            dataGridViewErrors.Rows.Add("Синтаксис", error.Message, error.Line, error.Column);
-                        }
-                    }
-
-                    SetStatus($"Анализ завершён с ошибками ({parser.Errors.Count})");
+                    MessageBox.Show("Нет активной вкладки.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // Отображение тетрад
-                int lineNumber = 0;
-                foreach (var quad in quads)
+                // Получаем SplitContainer из вкладки
+                var splitContainer = selectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
+                if (splitContainer == null)
                 {
-                    dataGridView1.Rows.Add(lineNumber++, quad.Op, quad.Arg1, quad.Arg2, quad.Result);
+                    MessageBox.Show("SplitContainer не найден на активной вкладке.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
 
+                // Получаем RichTextBox из SplitContainer
+                var richTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
+                if (richTextBox == null)
+                {
+                    MessageBox.Show("RichTextBox не найден в SplitContainer.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                SetStatus("Синтаксический анализ завершён успешно");
+                // Получаем текст
+                string code = richTextBox.Text;
+
+                // задача 1
+                string numberPattern = @"[-+]?\b\d+(\.\d+)?\b";
+                Regex numberRegex = new Regex(numberPattern);
+                MatchCollection matches = numberRegex.Matches(code);
+
+                // задача 3
+                //string pattern = @"[-+]?\d+(?:[.,]\d+)?(?:[eE][-+]?\d+)?";
+                //Regex regex = new Regex(pattern);
+                //MatchCollection matches = regex.Matches(code);
+
+
+                // Добавляем найденные числа в dataGridView1
+                foreach (Match match in matches)
+                {
+                    dataGridView1.Rows.Add(match.Value, $"Позиция: {match.Index}");
+                }
+
+                SetStatus($"Найдено чисел: {matches.Count}");
             }
             catch (Exception ex)
             {
-                int line = 1;
-                int pos = 1;
-
-                try
-                {
-                    line = editorRichTextBox.GetLineFromCharIndex(editorRichTextBox.SelectionStart) + 1;
-                    pos = editorRichTextBox.SelectionStart - editorRichTextBox.GetFirstCharIndexOfCurrentLine() + 1;
-                }
-                catch { /* игнорируем ошибки позиционирования */ }
-
-                dataGridViewErrors.Rows.Add("Ошибка", ex.Message, line, pos);
-                SetStatus("Ошибка анализа");
+                MessageBox.Show("Ошибка: " + ex.Message, "Поиск чисел", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetStatus("Ошибка при поиске чисел");
             }
         }
 
+        //Задача 2
+        //private void пускToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        // Очистка предыдущих результатов
+        //        dataGridView1.Rows.Clear();
+        //        InitializeDataGridViewColumns(dataGridView1);
 
+        //        // Получаем активную вкладку
+        //        TabPage selectedTab = tabControl1.SelectedTab;
+        //        if (selectedTab == null)
+        //        {
+        //            MessageBox.Show("Нет активной вкладки.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //            return;
+        //        }
 
-        private void InitializeErrorGrid(DataGridView dataGridView)
-        {
-            if (dataGridView != null)
-            {
-                Font currentFont = new Font("Bookman Old Style", currentOutputFontSize);
-                DataGridViewCellStyle cellStyle = new DataGridViewCellStyle { Font = currentFont };
+        //        // Получаем SplitContainer из вкладки
+        //        var splitContainer = selectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
+        //        if (splitContainer == null)
+        //        {
+        //            MessageBox.Show("SplitContainer не найден на активной вкладке.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //            return;
+        //        }
 
-                dataGridView.Columns.Clear();
+        //        // Получаем RichTextBox из SplitContainer
+        //        var richTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
+        //        if (richTextBox == null)
+        //        {
+        //            MessageBox.Show("RichTextBox не найден в SplitContainer.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //            return;
+        //        }
 
-                dataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "ErrorType",
-                    HeaderText = "Тип ошибки",
-                    Width = 150,
-                    DefaultCellStyle = cellStyle
-                });
+        //        // Получаем текст
+        //        string code = richTextBox.Text;
 
-                dataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Message",
-                    HeaderText = "Сообщение",
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    DefaultCellStyle = cellStyle
-                });
+        //        // Регулярное выражение для идентификаторов
+        //        string identifierPattern = @"\b[a-zA-Z$_][a-zA-Z0-9]*\b";
+        //        Regex identifierRegex = new Regex(identifierPattern);
+        //        MatchCollection matches = identifierRegex.Matches(code);
 
-                dataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Line",
-                    HeaderText = "Строка",
-                    Width = 100,
-                    DefaultCellStyle = cellStyle
-                });
+        //        // Добавляем найденные идентификаторы в dataGridView1
+        //        foreach (Match match in matches)
+        //        {
+        //            dataGridView1.Rows.Add(match.Value, $"Позиция: {match.Index}");
+        //        }
 
-                dataGridView.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Position",
-                    HeaderText = "Позиция",
-                    Width = 100,
-                    DefaultCellStyle = cellStyle
-                });
+        //        SetStatus($"Найдено идентификаторов: {matches.Count}");
 
-                dataGridView1.ColumnHeadersDefaultCellStyle.Font = currentFont;
-                dataGridView1.Font = currentFont;
-            }
-        }
-
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Ошибка: " + ex.Message, "Поиск", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        SetStatus("Ошибка при поиске");
+        //    }
+        //}
 
         private void InitializeDataGridViewColumns(DataGridView dataGridView1)
         {
@@ -394,53 +374,23 @@ namespace Lexer
 
                 dataGridView1.Columns.Clear();
 
-                // Тип тетрады (опционально)
+                // Колонка: Найденное число
                 dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    Name = "QuadType",
-                    HeaderText = "Тип",
+                    Name = "Value",
+                    HeaderText = "Найденное число",
                     AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    Width = 70,
+                    Width = 150,
                     DefaultCellStyle = cellStyle
                 });
 
-                // Оператор (op)
+                // Колонка: Позиция в тексте
                 dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    Name = "Op",
-                    HeaderText = "Оператор",
+                    Name = "Position",
+                    HeaderText = "Позиция в тексте",
                     AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    Width = 80,
-                    DefaultCellStyle = cellStyle
-                });
-
-                // Аргумент 1 (arg1)
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Arg1",
-                    HeaderText = "Аргумент 1",
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    Width = 100,
-                    DefaultCellStyle = cellStyle
-                });
-
-                // Аргумент 2 (arg2)
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Arg2",
-                    HeaderText = "Аргумент 2",
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    Width = 100,
-                    DefaultCellStyle = cellStyle
-                });
-
-                // Результат (result)
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "Result",
-                    HeaderText = "Результат",
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    Width = 100,
+                    Width = 150,
                     DefaultCellStyle = cellStyle
                 });
 
@@ -448,6 +398,7 @@ namespace Lexer
                 dataGridView1.Font = currentFont;
             }
         }
+
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
