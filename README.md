@@ -36,6 +36,11 @@
 
 ![изображение](https://github.com/user-attachments/assets/3533f4db-1d8e-448a-84f1-5688a0cf7728)
 
+Задача 3 для автомата
+
+![изображение](https://github.com/user-attachments/assets/6a46ab36-bfc8-4a7a-98be-27db5b47fb32)
+
+
 
 
 
