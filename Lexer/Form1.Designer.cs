@@ -74,8 +74,8 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.richTextBoxLog = new System.Windows.Forms.RichTextBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -88,7 +88,7 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.BackColor = System.Drawing.Color.Honeydew;
+            this.menuStrip1.BackColor = System.Drawing.Color.LavenderBlush;
             this.menuStrip1.Font = new System.Drawing.Font("Bookman Old Style", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -340,7 +340,7 @@
             // 
             // toolStrip1
             // 
-            this.toolStrip1.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.toolStrip1.BackColor = System.Drawing.Color.Pink;
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(30, 30);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
@@ -473,7 +473,7 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.BackColor = System.Drawing.Color.Honeydew;
+            this.splitContainer1.BackColor = System.Drawing.Color.Pink;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 66);
             this.splitContainer1.Name = "splitContainer1";
@@ -481,10 +481,12 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.BackColor = System.Drawing.Color.LavenderBlush;
             this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.BackColor = System.Drawing.Color.Pink;
             this.splitContainer1.Panel2.Controls.Add(this.tabControl2);
             this.splitContainer1.Size = new System.Drawing.Size(982, 487);
             this.splitContainer1.SplitterDistance = 276;
@@ -523,6 +525,16 @@
             this.tabPage1.Text = "Результат";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // richTextBoxLog
+            // 
+            this.richTextBoxLog.BackColor = System.Drawing.Color.LavenderBlush;
+            this.richTextBoxLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richTextBoxLog.Location = new System.Drawing.Point(3, 3);
+            this.richTextBoxLog.Name = "richTextBoxLog";
+            this.richTextBoxLog.Size = new System.Drawing.Size(968, 172);
+            this.richTextBoxLog.TabIndex = 0;
+            this.richTextBoxLog.Text = "";
+            // 
             // tabPage2
             // 
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
@@ -532,16 +544,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Вывод";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // richTextBoxLog
-            // 
-            this.richTextBoxLog.BackColor = System.Drawing.Color.Honeydew;
-            this.richTextBoxLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBoxLog.Location = new System.Drawing.Point(3, 3);
-            this.richTextBoxLog.Name = "richTextBoxLog";
-            this.richTextBoxLog.Size = new System.Drawing.Size(968, 172);
-            this.richTextBoxLog.TabIndex = 0;
-            this.richTextBoxLog.Text = "";
             // 
             // Form1
             // 

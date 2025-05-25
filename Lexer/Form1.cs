@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Lexer
 {
@@ -39,7 +34,7 @@ namespace Lexer
             statusLabel = new ToolStripStatusLabel();
 
             // Настройка внешнего вида
-            statusStrip.BackColor = Color.DarkSeaGreen;
+            statusStrip.BackColor = Color.Pink;
             statusLabel.Spring = true; // Растягиваем на всю ширину
             statusLabel.TextAlign = ContentAlignment.MiddleLeft;
 
@@ -101,7 +96,7 @@ namespace Lexer
                 Height = 200,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterParent,
-                BackColor = Color.Honeydew // Задаем цвет фона формы
+                BackColor = Color.LavenderBlush // Задаем цвет фона формы
             };
 
             // Создаем элементы управления
@@ -112,7 +107,7 @@ namespace Lexer
                 Top = 20,
                 Width = 100,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Honeydew // Устанавливаем цвет фона
+                BackColor = Color.LavenderBlush // Устанавливаем цвет фона
             };
 
             NumericUpDown editorSize = new NumericUpDown()
@@ -124,7 +119,7 @@ namespace Lexer
                 Maximum = 36,
                 Value = (decimal)currentEditorFontSize,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Honeydew
+                BackColor = Color.LavenderBlush
             };
 
             Label outputLabel = new Label()
@@ -134,7 +129,7 @@ namespace Lexer
                 Top = 60,
                 Width = 150,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Honeydew
+                BackColor = Color.LavenderBlush
             };
 
             NumericUpDown outputSize = new NumericUpDown()
@@ -146,7 +141,7 @@ namespace Lexer
                 Maximum = 36,
                 Value = (decimal)currentOutputFontSize,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Honeydew
+                BackColor = Color.LavenderBlush
             };
 
             System.Windows.Forms.Button okButton = new System.Windows.Forms.Button()
@@ -158,7 +153,7 @@ namespace Lexer
                 Height = 35,
                 DialogResult = DialogResult.OK,
                 Font = new Font("Bookman Old Style", 10),
-                BackColor = Color.Linen
+                BackColor = Color.LightPink
             };
 
             // Добавляем элементы на форму
@@ -205,72 +200,6 @@ namespace Lexer
                         lineNumberPanel.Invalidate();
                     }
                 }
-            }
-        }
-
-
-        //private void UpdateOutputFontSize()
-        //{
-        //    if (dataGridView1 != null)
-        //    {
-        //        // Создаем новый шрифт с текущими настройками
-        //        Font newFont = new Font("Bookman Old Style", currentOutputFontSize);
-
-        //        // Обновляем основной шрифт
-        //        dataGridView1.Font = newFont;
-
-        //        // Обновляем шрифт в ячейках
-        //        foreach (DataGridViewColumn column in dataGridView1.Columns)
-        //        {
-        //            column.DefaultCellStyle.Font = newFont;
-        //        }
-
-        //        // Обновляем шрифт заголовков
-        //        dataGridView1.ColumnHeadersDefaultCellStyle.Font = newFont;
-
-        //        // Обновляем высоту строк
-        //        dataGridView1.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders);
-        //    }
-        //}
-
-        private void InitializeDataGridViewColumns(DataGridView dataGridView1)
-        {
-            if (dataGridView1 != null)
-            {
-                Font currentFont = new Font("Bookman Old Style", currentOutputFontSize);
-                DataGridViewCellStyle cellStyle = new DataGridViewCellStyle { Font = currentFont };
-
-                dataGridView1.Columns.Clear();
-
-                // Тип ошибки
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "ErrorType",
-                    HeaderText = "Тип ошибки",
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                    DefaultCellStyle = cellStyle
-                });
-
-                // Номер строки
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "LineNumber",
-                    HeaderText = "Номер строки",
-                    Width = 100,
-                    DefaultCellStyle = cellStyle
-                });
-
-                // Позиция
-                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "PositionRange",
-                    HeaderText = "Позиция (с-до)",
-                    Width = 130,
-                    DefaultCellStyle = cellStyle
-                });
-
-                dataGridView1.ColumnHeadersDefaultCellStyle.Font = currentFont;
-                dataGridView1.Font = currentFont;
             }
         }
 
@@ -516,7 +445,7 @@ namespace Lexer
             {
                 Padding = new Padding(3),
                 UseVisualStyleBackColor = true,
-                BackColor = Color.FloralWhite
+                BackColor = Color.LavenderBlush
             };
 
             // Создаём SplitContainer для редактора с нумерацией строк
@@ -540,14 +469,14 @@ namespace Lexer
             Panel lineNumberPanel = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = Color.Linen
+                BackColor = Color.LavenderBlush
             };
 
             // RichTextBox для редактирования кода
             RichTextBox editorRichTextBox = new RichTextBox
             {
                 Dock = DockStyle.Fill,
-                BackColor = Color.Linen,
+                BackColor = Color.LavenderBlush,
                 Text = fileContent,
                 Tag = filePath,
                 Name = "editorRichTextBox",
@@ -935,7 +864,6 @@ namespace Lexer
             }
         }
 
-
         private (int line, int column) GetLineAndColumn(string text, int position)
         {
             int line = 0;
@@ -970,41 +898,6 @@ namespace Lexer
         {
             Analyze();
         }
-
-        //private void пускToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    SetStatus("Выполнение лексического анализа...");
-        //    try
-        //    {
-        //        if (tabControl1.SelectedTab == null) return;
-
-        //        // Получаем SplitContainer из текущей вкладки
-        //        var splitContainer = tabControl1.SelectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
-        //        if (splitContainer == null) return;
-
-        //        // Получаем RichTextBox из Panel2 SplitContainer
-        //        var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
-        //        if (editorRichTextBox == null) return;
-
-        //        // Используем существующий dataGridView1, который должен быть в splitcontainer1.Panel2
-        //        if (dataGridView1 == null) return;
-        //        UpdateOutputFontSize();
-        //        // Анализируем текст
-        //        Scanner scanner = new Scanner();
-        //        dataGridView1.Rows.Clear();
-        //        scanner.Analyze(editorRichTextBox.Text, dataGridView1, editorRichTextBox);
-        //        SetStatus("Лексический анализ завершен");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        SetStatus($"Ошибка анализа: {ex.Message}");
-        //    }
-        //}
-
-        //private void toolStripButton9_Click(object sender, EventArgs e)
-        //{
-        //    пускToolStripMenuItem_Click(sender, e);
-        //}
 
         private void постановкаЗадачиToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1124,5 +1017,6 @@ namespace Lexer
                               MessageBoxIcon.Error);
             }
         }
+
     }
 }
