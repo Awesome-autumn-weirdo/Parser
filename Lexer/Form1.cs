@@ -63,12 +63,12 @@ namespace Lexer
             statusStrip.Items.Add(timeLabel);
 
             Properties.Settings.Default.Reload();
-            InitializeDataGridViewColumns(dataGridView1);
-            dataGridView1.Font = new Font("Bookman Old Style", Properties.Settings.Default.OutputFontSize);
+            //InitializeDataGridViewColumns(dataGridView1);
+            //dataGridView1.Font = new Font("Bookman Old Style", Properties.Settings.Default.OutputFontSize);
 
             this.FormClosing += Form1_FormClosing;
 
-            CreateNewTab(null, "Новый документ", "type Point = record\r\n    x, y: real\r\nend;");
+            CreateNewTab(null, "Новый документ", "for 123 := x to 10 do y = z + ;");
         }
 
         private void StatusTimer_Tick(object sender, EventArgs e)
@@ -180,7 +180,7 @@ namespace Lexer
                 Properties.Settings.Default.Save();
 
                 UpdateEditorFontSize();
-                UpdateOutputFontSize();
+                //UpdateOutputFontSize();
             }
         }
 
@@ -209,29 +209,29 @@ namespace Lexer
         }
 
 
-        private void UpdateOutputFontSize()
-        {
-            if (dataGridView1 != null)
-            {
-                // Создаем новый шрифт с текущими настройками
-                Font newFont = new Font("Bookman Old Style", currentOutputFontSize);
+        //private void UpdateOutputFontSize()
+        //{
+        //    if (dataGridView1 != null)
+        //    {
+        //        // Создаем новый шрифт с текущими настройками
+        //        Font newFont = new Font("Bookman Old Style", currentOutputFontSize);
 
-                // Обновляем основной шрифт
-                dataGridView1.Font = newFont;
+        //        // Обновляем основной шрифт
+        //        dataGridView1.Font = newFont;
 
-                // Обновляем шрифт в ячейках
-                foreach (DataGridViewColumn column in dataGridView1.Columns)
-                {
-                    column.DefaultCellStyle.Font = newFont;
-                }
+        //        // Обновляем шрифт в ячейках
+        //        foreach (DataGridViewColumn column in dataGridView1.Columns)
+        //        {
+        //            column.DefaultCellStyle.Font = newFont;
+        //        }
 
-                // Обновляем шрифт заголовков
-                dataGridView1.ColumnHeadersDefaultCellStyle.Font = newFont;
+        //        // Обновляем шрифт заголовков
+        //        dataGridView1.ColumnHeadersDefaultCellStyle.Font = newFont;
 
-                // Обновляем высоту строк
-                dataGridView1.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders);
-            }
-        }
+        //        // Обновляем высоту строк
+        //        dataGridView1.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders);
+        //    }
+        //}
 
         private void InitializeDataGridViewColumns(DataGridView dataGridView1)
         {
@@ -849,77 +849,116 @@ namespace Lexer
 
         private void Analyze()
         {
-            if (tabControl1.SelectedTab == null || dataGridView1 == null) return;
+            if (tabControl1.SelectedTab == null) return;
 
+            // Ищем splitContainer в выбранной вкладке tabControl1 (для редактора)
             var splitContainer = tabControl1.SelectedTab.Controls.OfType<SplitContainer>().FirstOrDefault();
             if (splitContainer == null) return;
 
             var editorRichTextBox = splitContainer.Panel2.Controls.OfType<RichTextBox>().FirstOrDefault();
             if (editorRichTextBox == null) return;
 
+            // Отдельно ищем splitContainer1 в форме (основной splitContainer для лога)
+            var splitContainer1 = this.Controls.OfType<SplitContainer>()
+                                   .FirstOrDefault(sc => sc.Name == "splitContainer1");
+            if (splitContainer1 == null) return;
+
+            // В splitContainer1.Panel2 ищем tabControl2
+            var tabControl2 = splitContainer1.Panel2.Controls.OfType<TabControl>()
+                                 .FirstOrDefault(tc => tc.Name == "tabControl2");
+            if (tabControl2 == null) return;
+
+            // В tabControl2 ищем tabPage1
+            var tabPage1 = tabControl2.TabPages.Cast<TabPage>()
+                              .FirstOrDefault(tp => tp.Name == "tabPage1");
+            if (tabPage1 == null) return;
+
+            // В tabPage1 ищем richTextBoxLog
+            var logRichTextBox = tabPage1.Controls.OfType<RichTextBox>()
+                                    .FirstOrDefault(rtb => rtb.Name == "richTextBoxLog");
+            if (logRichTextBox == null) return;
+
             SetStatus("Выполнение синтаксического анализа...");
+
             try
             {
                 string inputText = editorRichTextBox.Text;
-                var parser = new RecordParser();
-                var errors = parser.ParseRecord(inputText, editorRichTextBox);
 
-                dataGridView1.Invoke((MethodInvoker)delegate
+                var parser = new Parser();
+                var (errors, trace) = parser.Parse(inputText, editorRichTextBox);
+
+                Action updateUI = () =>
                 {
-                    dataGridView1.Rows.Clear();
+                    var logBuilder = new System.Text.StringBuilder();
+
+                    foreach (var step in trace)
+                    {
+                        logBuilder.AppendLine(step);
+                    }
 
                     if (errors.Count == 0)
                     {
-                        MessageBox.Show("Анализ завершен успешно. Ошибок не найдено.", "Результат анализа",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        logBuilder.AppendLine("Анализ завершен успешно. Ошибок не найдено.");
                     }
                     else
                     {
-                        foreach (var (message, position, length) in errors)
+                        logBuilder.AppendLine($"Найдено {errors.Count} ошибок:");
+                        foreach (var err in errors)
                         {
+                            string message = err.Item1;
+                            int position = err.Item2;
+                            int length = err.Item3;
+
                             (int line, int col) = GetLineAndColumn(inputText, position);
                             int endCol = col + length;
 
-                            dataGridView1.Rows.Add(
-                                message,
-                                (line + 1).ToString(),           // Строка
-                                $"{col + 1}-{endCol}"           // Позиция
-                            );
+                            logBuilder.AppendLine($"Ошибка: {message} (строка {line + 1}, колонка {col + 1}-{endCol})");
                         }
-
-                        MessageBox.Show($"Найдено {errors.Count} ошибок.", "Результат анализа",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
 
+                    logRichTextBox.Clear();
+                    logRichTextBox.AppendText(logBuilder.ToString());
+
                     SetStatus("Синтаксический анализ завершен");
-                });
+                };
+
+                if (logRichTextBox.InvokeRequired)
+                    logRichTextBox.Invoke(updateUI);
+                else
+                    updateUI();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при анализе: {ex.Message}", "Ошибка",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetStatus("Анализ завершен с ошибкой");
             }
         }
 
 
         private (int line, int column) GetLineAndColumn(string text, int position)
         {
-            int line = 0, column = 0, index = 0;
+            int line = 0;
+            int currentIndex = 0;
             var lines = text.Split('\n');
 
             foreach (var ln in lines)
             {
-                if (position <= index + ln.Length)
+                int lineLengthWithBreak = ln.Length + 1; // Учитываем \n
+                if (position < currentIndex + lineLengthWithBreak)
                 {
-                    column = position - index;
-                    break;
+                    int column = position - currentIndex;
+                    return (line, column);
                 }
-                index += ln.Length + 1; // +1 за '\n'
+
+                currentIndex += lineLengthWithBreak;
                 line++;
             }
 
-            return (line, column);
+            // Если позиция за пределами текста
+            return (line, 0);
         }
+
 
 
         private void toolStripButton9_Click(object sender, EventArgs e)
