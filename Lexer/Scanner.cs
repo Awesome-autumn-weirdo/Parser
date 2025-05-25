@@ -71,36 +71,38 @@ namespace Lexer
             if (Curr == '\0')
                 return new Token(TokenType.EndOfInput, "", i);
 
-            if (Curr == ':')
+            // Обработка специальных символов
+            switch (Curr)
             {
-                GoNext();
-                if (Curr == '=')
-                {
+                case ':':
                     GoNext();
-                    return new Token(TokenType.Assign, ":=", start);
-                }
+                    if (Curr == '=')
+                    {
+                        GoNext();
+                        return new Token(TokenType.Assign, ":=", start);
+                    }
+                    break;
+                case '=':
+                    GoNext();
+                    return new Token(TokenType.Equal, "=", start);
+                case '+':
+                    GoNext();
+                    return new Token(TokenType.Plus, "+", start);
+                case '-':
+                    GoNext();
+                    return new Token(TokenType.Minus, "-", start);
+                case ';':
+                    GoNext();
+                    return new Token(TokenType.Semicolon, ";", start);
+                case '*':  // Недопустимые операции
+                case '/':
+                    char op = Curr;
+                    GoNext();
+                    return new Token(TokenType.Unknown, op.ToString(), start);
             }
-            else if (Curr == '=')
-            {
-                GoNext();
-                return new Token(TokenType.Equal, "=", start);
-            }
-            else if (Curr == '+')
-            {
-                GoNext();
-                return new Token(TokenType.Plus, "+", start);
-            }
-            else if (Curr == '-')
-            {
-                GoNext();
-                return new Token(TokenType.Minus, "-", start);
-            }
-            else if (Curr == ';')
-            {
-                GoNext();
-                return new Token(TokenType.Semicolon, ";", start);
-            }
-            else if (char.IsLetter(Curr))
+
+            // Идентификаторы и ключевые слова
+            if (char.IsLetter(Curr))
             {
                 string id = "";
                 while (char.IsLetterOrDigit(Curr))
@@ -114,6 +116,7 @@ namespace Lexer
                 else
                     return new Token(TokenType.Identifier, id, start);
             }
+            // Числа
             else if (char.IsDigit(Curr))
             {
                 string n = "";
@@ -125,7 +128,7 @@ namespace Lexer
                 return new Token(TokenType.Number, n, start);
             }
 
-            // неизвестный символ
+            // Все остальные символы - неизвестные
             string unk = Curr.ToString();
             GoNext();
             return new Token(TokenType.Unknown, unk, start);
