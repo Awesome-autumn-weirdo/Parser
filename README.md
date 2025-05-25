@@ -2,14 +2,15 @@
 
 ### Вариант задания  
 Вариант 27
-Для грамматики G[<For>] разработать и реализовать алгоритм
+
+Для грамматики G[(For)] разработать и реализовать алгоритм
 анализа на основе метода рекурсивного спуска.
 
-G[<For>]:
-1. <For> → for id:=<Operand> to <Operand> do <Stmt> ;
-2. <Operand>→ var | const
-3. <Stmt>→ var as <ArithExpr>
-4. <ArithExpr>→<Operand> {ao <Operand>}
+G[(For)]:
+1. (For) → for id:=(Operand) to (Operand) do (Stmt) ;
+2. (Operand)→ var | const
+3. (Stmt)→ var as (ArithExpr)
+4. (ArithExpr)→(Operand) {ao (Operand)}
 
 Примечание: for, do, and, or – ключевые слова. В тип ao объединили
 арифметические операции + и -, в тип as оператор присваивания =, тип var
@@ -21,7 +22,7 @@ G[<For>]:
 Пример цепочки: for i3:=10 to n do x=y-z+70 ;
 
 ### Классификация грамматики
-Грамматика G[<For>] является контекстно-свободной (КС-грамматикой), так как все её правила имеют вид:
+Грамматика G[(For)] является контекстно-свободной (КС-грамматикой), так как все её правила имеют вид:
 
 A → α,
 
@@ -51,32 +52,35 @@ var (только буквы, напр. a, count)
 
 const (числа, напр. 10, -5)
 
-Символы пунктуации: ;
+Конечный символ: ;
 
 2. Нетерминальные символы (N)
-<For> (начальный символ)
+(For) (начальный символ)
 
-<Operand> (операнд: переменная или константа)
+(Operand) (операнд: переменная или константа)
 
-<Stmt> (оператор присваивания)
+(Stmt) (оператор присваивания)
 
-<ArithExpr> (арифметическое выражение)
+(ArithExpr) (арифметическое выражение)
 
 3. Правила вывода (P)
-<For> → for id := <Operand> to <Operand> do <Stmt> ;
+(For) → for id := (Operand) to (Operand) do (Stmt) ;
 
-<Operand> → var | const
+(Operand) → var | const
 
-<Stmt> → var as <ArithExpr>
+(Stmt) → var as (ArithExpr)
 
-<ArithExpr> → <Operand> {ao <Operand>}
+(ArithExpr) → (Operand) {ao (Operand)}
 
 4. Допустимые цепочки
 Язык L(G) состоит из всех строк вида:
 
-for id := <Operand> to <Operand> do <Stmt> ;
+for id := (Operand) to (Operand) do (Stmt) ;
 
 ### Тестовые примеры
+![изображение](https://github.com/user-attachments/assets/ca52aaa7-df8d-454b-afd6-ed4c84ca4343)
+
+![изображение](https://github.com/user-attachments/assets/8041b111-6d61-49e4-b2c7-c092ccec8719)
 
 
 
