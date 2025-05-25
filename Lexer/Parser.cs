@@ -127,12 +127,13 @@ namespace Lexer
             else
             {
                 AddError("Ожидался операнд (переменная или число)");
-                GoNext();
+                // Не вызываем GoNext, чтобы не пропустить важные токены
             }
 
             indentLevel--;
             AddTrace("Выход из <Operand>");
         }
+
 
         private void ParseStmt()
         {
