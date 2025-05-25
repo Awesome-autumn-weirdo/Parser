@@ -28,9 +28,33 @@ namespace Lexer
             index++;
         }
 
+        // Пропускает один Unknown токен и сразу фиксирует ошибку
+        private bool SkipOneUnknownToken()
+        {
+            if (GetCurrentToken().Type == TokenType.Unknown)
+            {
+                var current = GetCurrentToken();
+                errorList.Add(($"Недопустимый символ: '{current.Value}'", current.Pos, current.Value.Length));
+                GoNext();
+                return true;
+            }
+            return false;
+        }
+
+        // Пропускает Unknown токены по одному, фиксируя ошибку для каждого
+        private void SkipUnknownTokens()
+        {
+            while (SkipOneUnknownToken())
+            {
+                // Цикл пропускает по одному Unknown токену
+            }
+        }
+
         // Модифицированный MatchOrError с выводом трассировки токена
         private bool MatchOrError(TokenType type, string errorMessage, string traceName = null)
         {
+            SkipUnknownTokens();
+
             var current = GetCurrentToken();
             if (current.Type == type)
             {
@@ -51,12 +75,18 @@ namespace Lexer
 
         private void AddError(string message)
         {
+            var current = GetCurrentToken();
+
+            // Не добавляем ошибку для Unknown, т.к. она уже добавлена в SkipOneUnknownToken
+            if (current.Type == TokenType.Unknown)
+                return;
+
             int length = 1;
-            if (GetCurrentToken().Value != null)
+            if (current.Value != null)
             {
-                length = GetCurrentToken().Value.Length;
+                length = current.Value.Length;
             }
-            errorList.Add((message, GetCurrentToken().Pos, length));
+            errorList.Add((message, current.Pos, length));
         }
 
         private void AddTrace(string message)
@@ -92,6 +122,7 @@ namespace Lexer
 
         private void ParseFor()
         {
+            SkipUnknownTokens();
             AddTrace("Вход в <For>");
             indentLevel++;
 
@@ -104,6 +135,7 @@ namespace Lexer
             MatchOrError(TokenType.Do, "Ожидался 'do'", "do");
             ParseStmt();
 
+            // Проверка на точку с запятой перед EndOfInput
             if (tokenList.Count >= 2)
             {
                 var last = tokenList[tokenList.Count - 2];
@@ -120,21 +152,42 @@ namespace Lexer
 
         private void ParseOperand()
         {
+            SkipUnknownTokens();
             AddTrace("Вход в <Operand>");
             indentLevel++;
 
-            var current = GetCurrentToken();
-            if (current.Type == TokenType.Identifier)
+            bool operandFound = false;
+
+            while (true)
             {
-                AddTrace($"Токен: var = {current.Value}");
-                GoNext();
+                var current = GetCurrentToken();
+
+                if (current.Type == TokenType.Identifier || current.Type == TokenType.Number)
+                {
+                    AddTrace($"Токен: {(current.Type == TokenType.Identifier ? "var" : "const")} = {current.Value}");
+                    GoNext();
+                    operandFound = true;
+                }
+                else if (current.Type == TokenType.Unknown)
+                {
+                    // Собираем подряд идущие Unknown токены
+                    int unknownStartPos = current.Pos;
+                    int unknownLength = 0;
+                    while (GetCurrentToken().Type == TokenType.Unknown)
+                    {
+                        unknownLength += GetCurrentToken().Value.Length;
+                        GoNext();
+                    }
+                    errorList.Add(($"Недопустимые символы внутри операнда", unknownStartPos, unknownLength));
+                }
+                else
+                {
+                    // Токен не входит в операнд — выходим
+                    break;
+                }
             }
-            else if (current.Type == TokenType.Number)
-            {
-                AddTrace($"Токен: const = {current.Value}");
-                GoNext();
-            }
-            else
+
+            if (!operandFound)
             {
                 AddError("Ожидался операнд (переменная или число)");
                 GoNext();
@@ -146,6 +199,7 @@ namespace Lexer
 
         private void ParseStmt()
         {
+            SkipUnknownTokens();
             AddTrace("Вход в <Stmt>");
             indentLevel++;
 
@@ -180,6 +234,8 @@ namespace Lexer
 
         private bool MatchToken(TokenType type)
         {
+            SkipUnknownTokens();
+
             if (GetCurrentToken().Type == type)
             {
                 GoNext();
@@ -190,6 +246,7 @@ namespace Lexer
 
         private void ParseArithExpr()
         {
+            SkipUnknownTokens();
             AddTrace("Вход в <ArithExpr>");
             indentLevel++;
 
