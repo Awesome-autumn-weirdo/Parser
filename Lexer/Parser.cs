@@ -19,7 +19,7 @@ namespace Lexer
             }
             else
             {
-                return tokenList[tokenList.Count - 1]; // возвращаем последний если что
+                return tokenList[tokenList.Count - 1];
             }
         }
 
@@ -28,13 +28,24 @@ namespace Lexer
             index++;
         }
 
-        private bool MatchToken(TokenType type)
+        // Модифицированный MatchOrError с выводом трассировки токена
+        private bool MatchOrError(TokenType type, string errorMessage, string traceName = null)
         {
-            if (GetCurrentToken().Type == type)
+            var current = GetCurrentToken();
+            if (current.Type == type)
             {
+                if (traceName != null)
+                {
+                    if (current.Value != null)
+                        AddTrace($"Токен: {traceName} = {current.Value}");
+                    else
+                        AddTrace($"Токен: {traceName}");
+                }
                 GoNext();
                 return true;
             }
+            AddError(errorMessage);
+            GoNext();
             return false;
         }
 
@@ -71,16 +82,12 @@ namespace Lexer
 
             ParseFor();
 
-            return (errorList, traceLog);
-        }
+            if (errorList.Count == 0)
+                AddTrace("Анализ завершен успешно. Ошибок не найдено.");
+            else
+                AddTrace($"Анализ завершен с {errorList.Count} ошибками.");
 
-        private bool MatchOrError(TokenType type, string errorMessage)
-        {
-            if (MatchToken(type))
-                return true;
-            AddError(errorMessage);
-            GoNext();
-            return false;
+            return (errorList, traceLog);
         }
 
         private void ParseFor()
@@ -88,17 +95,13 @@ namespace Lexer
             AddTrace("Вход в <For>");
             indentLevel++;
 
-            MatchOrError(TokenType.For, "Ожидался 'for'");
-            MatchOrError(TokenType.Identifier, "Ожидался идентификатор");
-            MatchOrError(TokenType.Assign, "Ожидалось ':='");
-
+            MatchOrError(TokenType.For, "Ожидался 'for'", "for");
+            MatchOrError(TokenType.Identifier, "Ожидался идентификатор", "var");
+            MatchOrError(TokenType.Assign, "Ожидалось ':='", ":=");
             ParseOperand();
-
-            MatchOrError(TokenType.To, "Ожидался 'to'");
+            MatchOrError(TokenType.To, "Ожидался 'to'", "to");
             ParseOperand();
-
-            MatchOrError(TokenType.Do, "Ожидался 'do'");
-
+            MatchOrError(TokenType.Do, "Ожидался 'do'", "do");
             ParseStmt();
 
             if (tokenList.Count >= 2)
@@ -108,6 +111,7 @@ namespace Lexer
                 {
                     AddError("Ожидалась точка с запятой в конце");
                 }
+                else AddTrace("Токен: ;");
             }
 
             indentLevel--;
@@ -120,40 +124,68 @@ namespace Lexer
             indentLevel++;
 
             var current = GetCurrentToken();
-            if (current.Type == TokenType.Identifier || current.Type == TokenType.Number)
+            if (current.Type == TokenType.Identifier)
             {
+                AddTrace($"Токен: var = {current.Value}");
+                GoNext();
+            }
+            else if (current.Type == TokenType.Number)
+            {
+                AddTrace($"Токен: const = {current.Value}");
                 GoNext();
             }
             else
             {
                 AddError("Ожидался операнд (переменная или число)");
-                // Не вызываем GoNext, чтобы не пропустить важные токены
+                GoNext();
             }
 
             indentLevel--;
             AddTrace("Выход из <Operand>");
         }
 
-
         private void ParseStmt()
         {
             AddTrace("Вход в <Stmt>");
             indentLevel++;
 
-            if (!MatchToken(TokenType.Identifier))
+            var current = GetCurrentToken();
+            if (current.Type == TokenType.Identifier)
+            {
+                AddTrace($"Токен: var = {current.Value}");
+                GoNext();
+            }
+            else
             {
                 AddError("Ожидалась переменная");
+                GoNext();
             }
 
-            if (!MatchToken(TokenType.Equal))
+            AddTrace("Вход в <Assign>");
+            if (MatchToken(TokenType.Equal))
+            {
+                AddTrace("Токен: =");
+            }
+            else
             {
                 AddError("Ожидался '='");
             }
+            AddTrace("Выход из <Assign>");
 
             ParseArithExpr();
 
             indentLevel--;
             AddTrace("Выход из <Stmt>");
+        }
+
+        private bool MatchToken(TokenType type)
+        {
+            if (GetCurrentToken().Type == type)
+            {
+                GoNext();
+                return true;
+            }
+            return false;
         }
 
         private void ParseArithExpr()
@@ -166,9 +198,23 @@ namespace Lexer
             var current = GetCurrentToken();
             while (current.Type == TokenType.Plus || current.Type == TokenType.Minus)
             {
-                GoNext();
-                ParseOperand();
-                current = GetCurrentToken(); // обновляем после перехода
+                if (current.Type == TokenType.Plus)
+                {
+                    AddTrace("Вход в <Plus>");
+                    AddTrace("Токен: +");
+                    GoNext();
+                    ParseOperand();
+                    AddTrace("Выход из <Plus>");
+                }
+                else if (current.Type == TokenType.Minus)
+                {
+                    AddTrace("Вход в <Minus>");
+                    AddTrace("Токен: -");
+                    GoNext();
+                    ParseOperand();
+                    AddTrace("Выход из <Minus>");
+                }
+                current = GetCurrentToken();
             }
 
             indentLevel--;
