@@ -78,9 +78,10 @@ const (числа, напр. 10, -5)
 for id := (Operand) to (Operand) do (Stmt) ;
 
 ### Тестовые примеры
-![изображение](https://github.com/user-attachments/assets/8b73bbd7-488e-48f7-9633-3433eeb509fc)
+![изображение](https://github.com/user-attachments/assets/8c7d402b-54b5-4601-971f-09a7b1112d5d)
 
-![изображение](https://github.com/user-attachments/assets/01928cb3-4445-4060-82f9-963a53a92a8e)
+![изображение](https://github.com/user-attachments/assets/645d2c37-0dd8-41c8-9a6f-27d9d9875f53)
+
 
 
 
